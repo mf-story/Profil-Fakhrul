@@ -23,6 +23,32 @@ async function uploadFile(f) {
   if (!r.ok) throw new Error("upload gagal");
   return (await r.json()).url;
 }
+// Upload dengan progress (untuk berkas besar spt video). onStage(fase, persen).
+function uploadFileProgress(f, onStage) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onprogress = (e) => { if (e.lengthComputable && onStage) onStage("read", Math.round((e.loaded / e.total) * 100)); };
+    reader.onerror = () => reject(new Error("gagal membaca berkas"));
+    reader.onload = () => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/upload");
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.upload.onprogress = (e) => { if (e.lengthComputable && onStage) onStage("upload", Math.round((e.loaded / e.total) * 100)); };
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try { resolve(JSON.parse(xhr.responseText).url); } catch { reject(new Error("respons server tak valid")); }
+        } else {
+          let msg = "gagal (kode " + xhr.status + ")";
+          try { msg = JSON.parse(xhr.responseText).error || msg; } catch {}
+          reject(new Error(msg));
+        }
+      };
+      xhr.onerror = () => reject(new Error("koneksi terputus"));
+      xhr.send(JSON.stringify({ dataUrl: reader.result }));
+    };
+    reader.readAsDataURL(f);
+  });
+}
 
 /* ---------------- Auth & boot ---------------- */
 async function boot() {
@@ -129,7 +155,8 @@ const PANELS = {
     const v = state.site.video || (state.site.video = { kicker: "Cara Kerja", titleHtml: "", lead: "", youtube: "", bgImage: "", file: "" });
     return `<h2 class="cms-title">Video</h2>${head("site.video", v)}
       <p class="muted" style="margin:-6px 0 12px">Bagian ini tampil jika ada video unggahan atau tautan YouTube. Video unggahan diprioritaskan.</p>
-      <label class="fld"><span>Unggah video (mp4/webm) — opsional</span><div class="img-field"><div class="img-prev" id="vidVideoPrev">${v.file ? `<video src="${esc(v.file)}" muted></video>` : ""}</div><div class="img-ctrl"><input type="file" id="vidVideoFile" accept="video/*" /><input type="text" data-bind="site.video.file" value="${esc(v.file || "")}" placeholder="path/URL video (kosongkan untuk pakai YouTube)" /></div></div></label>
+      <label class="fld"><span>Unggah video (mp4/webm) — opsional</span><div class="img-field"><div class="img-prev" id="vidVideoPrev">${v.file ? `<video src="${esc(v.file)}" muted controls></video>` : ""}</div><div class="img-ctrl"><input type="file" id="vidVideoFile" accept="video/*" /><input type="text" data-bind="site.video.file" value="${esc(v.file || "")}" placeholder="path/URL video (kosongkan untuk pakai YouTube)" /></div></div></label>
+      <div id="vidUploadStatus" class="upload-status ${v.file ? "ok" : ""}" ${v.file ? "" : "hidden"}>${v.file ? "✓ Ada video terunggah. Klik \"Simpan\" untuk publikasikan." : ""}</div>
       ${fld("Tautan / ID YouTube (dipakai jika tak ada video unggahan)", "site.video.youtube", v.youtube)}
       <label class="fld"><span>Gambar sampul / poster (opsional)</span><div class="img-field"><div class="img-prev" id="vidPrev">${v.bgImage ? `<img src="${esc(v.bgImage)}">` : ""}</div><div class="img-ctrl"><input type="file" id="vidFile" accept="image/*" /><input type="text" data-bind="site.video.bgImage" value="${esc(v.bgImage || "")}" placeholder="path/URL gambar" /></div></div></label>`;
   },
@@ -225,7 +252,30 @@ const AFTER = {
     const f = $("#vidFile", panel);
     if (f) f.onchange = async (e) => { if (e.target.files[0]) { try { const url = await uploadFile(e.target.files[0]); state.site.video.bgImage = url; switchPanel("video"); toast("Gambar diunggah."); } catch { toast("Gagal unggah", false); } } };
     const vf = $("#vidVideoFile", panel);
-    if (vf) vf.onchange = async (e) => { if (e.target.files[0]) { try { toast("Mengunggah video…"); const url = await uploadFile(e.target.files[0]); state.site.video.file = url; switchPanel("video"); toast("Video diunggah."); } catch { toast("Gagal unggah (ukuran video terlalu besar?)", false); } } };
+    const status = $("#vidUploadStatus", panel);
+    if (vf) vf.onchange = async (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      const MAXMB = 60;
+      const showStatus = (cls, msg) => { status.hidden = false; status.className = "upload-status " + cls; status.textContent = msg; };
+      if (file.size > MAXMB * 1024 * 1024) {
+        showStatus("err", `✗ Video ${(file.size / 1048576).toFixed(1)} MB terlalu besar (maks ${MAXMB} MB). Kompres dulu, atau gunakan tautan YouTube.`);
+        e.target.value = ""; return;
+      }
+      showStatus("", "Menyiapkan berkas…");
+      try {
+        const url = await uploadFileProgress(file, (stage, pct) => {
+          showStatus("", (stage === "read" ? "Menyiapkan berkas… " : "Mengunggah… ") + pct + "%");
+        });
+        state.site.video.file = url;
+        const inp = panel.querySelector('input[data-bind="site.video.file"]'); if (inp) inp.value = url;
+        const prev = $("#vidVideoPrev", panel); if (prev) prev.innerHTML = `<video src="${esc(url)}" muted controls></video>`;
+        showStatus("ok", '✓ Video berhasil terunggah. Klik "Simpan" untuk publikasikan.');
+        toast("Video terunggah. Jangan lupa klik Simpan.");
+      } catch (err) {
+        showStatus("err", "✗ Gagal mengunggah: " + err.message);
+        toast("Gagal mengunggah video", false);
+      }
+    };
   },
   experience(panel) {
     $("#addExp", panel).onclick = () => { state.site.experience.items.push({ year: "", title: "Pengalaman baru", org: "", desc: "" }); switchPanel("experience"); };

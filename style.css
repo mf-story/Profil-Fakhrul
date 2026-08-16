@@ -468,6 +468,9 @@ body.editing .row-del { display: inline-grid; place-items: center; }
 .cms-title { font-size: 1.6rem; margin-bottom: 18px; }
 .cms-sub { font-size: 1.05rem; margin: 22px 0 12px; color: var(--brand-2); }
 .cms-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+.upload-status { margin: -4px 0 14px; padding: 10px 14px; border-radius: 10px; font-size: .9rem; font-weight: 700; background: var(--bg-2); border: 1px solid var(--border); color: var(--muted); }
+.upload-status.ok { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.45); color: #047857; }
+.upload-status.err { background: rgba(220,38,38,.1); border-color: rgba(220,38,38,.45); color: #b91c1c; }
 /* Tombol tambah/hapus selalu terlihat di panel admin */
 .cms-panel .add-row { display: inline-block; }
 .cms-panel .row-del { display: inline-grid; place-items: center; }
