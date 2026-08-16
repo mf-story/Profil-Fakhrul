@@ -17,7 +17,7 @@
       { "icon": "<path d=\"M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4l-1.5-2Z\"/><circle cx=\"12\" cy=\"13\" r=\"3.5\"/>", "title": "Fotografer", "desc": "Menangkap momen dengan komposisi kuat dan pencahayaan yang tepat.", "cat": "foto", "wide": false },
       { "icon": "<rect x=\"2\" y=\"6\" width=\"14\" height=\"12\" rx=\"2\"/><path d=\"m16 10 6-4v12l-6-4\"/>", "title": "Videografer dan Pilot Drone", "desc": "Memproduksi video sinematik dan mengambil footage udara yang dramatis dengan presisi tinggi.", "cat": "video", "wide": false },
       { "icon": "<path d=\"M12 20h9\"/><path d=\"M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z\"/>", "title": "Editor", "desc": "Menyunting foto dan video hingga menghasilkan visual yang rapi dan berkelas.", "cat": "video", "wide": false },
-      { "icon": "<rect x=\"6\" y=\"2\" width=\"12\" height=\"20\" rx=\"3\"/><path d=\"M11 18h2\"/>", "title": "Pengembang Website dan Aplikasi Web dan APK Android", "desc": "Membangun website modern serta mengembangkan aplikasi berbasis web maupun Android (APK) yang fungsional dan siap pakai.", "cat": "web", "wide": true }
+      { "icon": "<rect x=\"6\" y=\"2\" width=\"12\" height=\"20\" rx=\"3\"/><path d=\"M11 18h2\"/>", "title": "Developer Web dan Aplikasi", "desc": "Membangun website modern serta mengembangkan aplikasi berbasis web maupun Android (APK) yang fungsional dan siap pakai.", "cat": "web", "wide": true }
     ]
   },
   "gallery": {
