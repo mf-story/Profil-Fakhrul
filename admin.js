@@ -18,35 +18,29 @@ function toast(msg, ok = true) {
 }
 function fileToDataURL(f) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); }); }
 async function uploadFile(f) {
-  const dataUrl = await fileToDataURL(f);
-  const r = await fetch("/api/upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dataUrl }) });
-  if (!r.ok) throw new Error("upload gagal");
+  // Kirim berkas mentah (biner) — server stream ke disk. Andal untuk gambar & video.
+  const r = await fetch("/api/upload", { method: "POST", headers: { "Content-Type": f.type || "application/octet-stream" }, body: f });
+  if (!r.ok) { let msg = "upload gagal"; try { msg = (await r.json()).error || msg; } catch {} throw new Error(msg); }
   return (await r.json()).url;
 }
-// Upload dengan progress (untuk berkas besar spt video). onStage(fase, persen).
-function uploadFileProgress(f, onStage) {
+// Upload biner dengan progress nyata (untuk berkas besar spt video). onProgress(persen 0..100).
+function uploadFileProgress(f, onProgress) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onprogress = (e) => { if (e.lengthComputable && onStage) onStage("read", Math.round((e.loaded / e.total) * 100)); };
-    reader.onerror = () => reject(new Error("gagal membaca berkas"));
-    reader.onload = () => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", "/api/upload");
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.upload.onprogress = (e) => { if (e.lengthComputable && onStage) onStage("upload", Math.round((e.loaded / e.total) * 100)); };
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try { resolve(JSON.parse(xhr.responseText).url); } catch { reject(new Error("respons server tak valid")); }
-        } else {
-          let msg = "gagal (kode " + xhr.status + ")";
-          try { msg = JSON.parse(xhr.responseText).error || msg; } catch {}
-          reject(new Error(msg));
-        }
-      };
-      xhr.onerror = () => reject(new Error("koneksi terputus"));
-      xhr.send(JSON.stringify({ dataUrl: reader.result }));
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/upload");
+    xhr.setRequestHeader("Content-Type", f.type || "application/octet-stream");
+    xhr.upload.onprogress = (e) => { if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100)); };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try { resolve(JSON.parse(xhr.responseText).url); } catch { reject(new Error("respons server tak valid")); }
+      } else {
+        let msg = "gagal (kode " + xhr.status + ")";
+        try { msg = JSON.parse(xhr.responseText).error || msg; } catch {}
+        reject(new Error(msg));
+      }
     };
-    reader.readAsDataURL(f);
+    xhr.onerror = () => reject(new Error("koneksi terputus"));
+    xhr.send(f);
   });
 }
 
@@ -255,17 +249,15 @@ const AFTER = {
     const status = $("#vidUploadStatus", panel);
     if (vf) vf.onchange = async (e) => {
       const file = e.target.files[0]; if (!file) return;
-      const MAXMB = 60;
+      const MAXMB = 200;
       const showStatus = (cls, msg) => { status.hidden = false; status.className = "upload-status " + cls; status.textContent = msg; };
       if (file.size > MAXMB * 1024 * 1024) {
         showStatus("err", `✗ Video ${(file.size / 1048576).toFixed(1)} MB terlalu besar (maks ${MAXMB} MB). Kompres dulu, atau gunakan tautan YouTube.`);
         e.target.value = ""; return;
       }
-      showStatus("", "Menyiapkan berkas…");
+      showStatus("", "Mengunggah… 0%");
       try {
-        const url = await uploadFileProgress(file, (stage, pct) => {
-          showStatus("", (stage === "read" ? "Menyiapkan berkas… " : "Mengunggah… ") + pct + "%");
-        });
+        const url = await uploadFileProgress(file, (pct) => showStatus("", "Mengunggah… " + pct + "%"));
         state.site.video.file = url;
         const inp = panel.querySelector('input[data-bind="site.video.file"]'); if (inp) inp.value = url;
         const prev = $("#vidVideoPrev", panel); if (prev) prev.innerHTML = `<video src="${esc(url)}" muted controls></video>`;

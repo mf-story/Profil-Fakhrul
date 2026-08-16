@@ -81,12 +81,13 @@ function render() {
       </div>
     </div>`).join("");
 
-  // Galeri (tampil hanya bila ada gambar)
+  // Galeri (tampil hanya bila ada gambar; item tanpa gambar diabaikan)
   const g = c.gallery || { items: [] };
   const gSec = document.getElementById("gallery");
-  if (g.items && g.items.length) {
+  const gItems = (g.items || []).filter((it) => it.image);
+  if (gItems.length) {
     document.getElementById("galleryHead").innerHTML = headHTML(g);
-    document.getElementById("gallery-grid").innerHTML = g.items.map((it) => `
+    document.getElementById("gallery-grid").innerHTML = gItems.map((it) => `
       <figure class="gcard reveal"><img src="${esc(it.image)}" alt="${esc(it.caption || "")}" class="gzoom" loading="lazy" />${it.caption ? `<figcaption>${esc(it.caption)}</figcaption>` : ""}</figure>`).join("");
     gSec.style.display = "";
   } else { gSec.style.display = "none"; }

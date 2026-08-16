@@ -152,11 +152,29 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, { ok: true });
       }
       if (p === "/api/upload" && req.method === "POST") {
-        const body = JSON.parse(await readBody(req, 64 * 1024 * 1024));
+        const EXT = { "image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "image/gif": ".gif", "image/svg+xml": ".svg", "video/mp4": ".mp4", "video/webm": ".webm", "video/quicktime": ".mov", "video/x-m4v": ".m4v" };
+        const ctype = (req.headers["content-type"] || "").split(";")[0].trim().toLowerCase();
+        // Mode biner: stream berkas mentah ke disk (andal & hemat memori untuk video besar).
+        if (ctype && ctype !== "application/json") {
+          if (!EXT[ctype]) return sendJson(res, 400, { error: "Tipe berkas tidak didukung: " + ctype });
+          const name = crypto.randomBytes(8).toString("hex") + EXT[ctype];
+          const dest = path.join(UPLOAD_DIR, name);
+          const ws = fs.createWriteStream(dest);
+          const LIMIT = 200 * 1024 * 1024;
+          let size = 0, failed = false;
+          const fail = (code, msg) => { failed = true; try { ws.destroy(); } catch {} try { fs.unlinkSync(dest); } catch {} try { req.destroy(); } catch {} if (!res.headersSent) sendJson(res, code, { error: msg }); };
+          req.on("data", (ch) => { size += ch.length; if (size > LIMIT) fail(413, "Berkas terlalu besar (maks 200MB)"); });
+          req.on("error", () => fail(500, "gagal menerima berkas"));
+          ws.on("error", () => fail(500, "gagal menulis berkas"));
+          ws.on("finish", () => { if (!failed) sendJson(res, 200, { url: "/uploads/" + name }); });
+          req.pipe(ws);
+          return;
+        }
+        // Mode JSON dataUrl (kompatibel lama).
+        const body = JSON.parse(await readBody(req, 96 * 1024 * 1024));
         const m = /^data:((?:image|video)\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(body.dataUrl || "");
-        if (!m) return sendJson(res, 400, { error: "Berkas tidak valid" });
-        const ext = ({ "image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "image/gif": ".gif", "image/svg+xml": ".svg", "video/mp4": ".mp4", "video/webm": ".webm", "video/quicktime": ".mov", "video/x-m4v": ".m4v" })[m[1]] || ".bin";
-        const name = crypto.randomBytes(8).toString("hex") + ext;
+        if (!m || !EXT[m[1]]) return sendJson(res, 400, { error: "Berkas tidak valid" });
+        const name = crypto.randomBytes(8).toString("hex") + EXT[m[1]];
         fs.writeFileSync(path.join(UPLOAD_DIR, name), Buffer.from(m[2], "base64"));
         return sendJson(res, 200, { url: "/uploads/" + name });
       }
