@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f2a4a"/>
+      <stop offset="1" stop-color="#1e4d86"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4e3bc"/>
+      <stop offset="1" stop-color="#c99a2e"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- Clipboard body -->
+  <rect x="132" y="128" width="248" height="288" rx="26" fill="#ffffff"/>
+  <rect x="132" y="128" width="248" height="72" rx="26" fill="#eef4ff"/>
+  <!-- Clip -->
+  <rect x="212" y="96" width="88" height="46" rx="16" fill="url(#gold)"/>
+  <rect x="228" y="80" width="56" height="36" rx="14" fill="url(#gold)"/>
+  <!-- Agenda lines -->
+  <g fill="#1e4d86">
+    <circle cx="176" cy="242" r="9"/>
+    <rect x="198" y="234" width="150" height="16" rx="8"/>
+    <circle cx="176" cy="292" r="9"/>
+    <rect x="198" y="284" width="150" height="16" rx="8"/>
+    <circle cx="176" cy="342" r="9"/>
+    <rect x="198" y="334" width="110" height="16" rx="8"/>
+  </g>
+  <!-- Gold check accent -->
+  <path d="M300 348 l22 22 l44 -52" fill="none" stroke="#c99a2e" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

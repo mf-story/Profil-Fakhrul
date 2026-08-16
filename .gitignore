@@ -1,0 +1,15 @@
+# OS & editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+
+# Dependensi (jika nanti ada)
+node_modules/
+
+# Memori agen / catatan lokal
+/memories/
+
+# Berkas sementara
+*_tmp.*
+assets/_*.png
