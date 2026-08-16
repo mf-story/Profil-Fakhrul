@@ -81,34 +81,40 @@ function render() {
       </div>
     </div>`).join("");
 
-  // Galeri (tampil hanya bila ada gambar; item tanpa gambar diabaikan)
+  // Media: gabungan Video + Galeri foto (slider) dalam satu bagian.
   const g = c.gallery || { items: [] };
-  const gSec = document.getElementById("gallery");
-  const gItems = (g.items || []).filter((it) => it.image);
-  if (gItems.length) {
-    document.getElementById("galleryHead").innerHTML = headHTML(g);
-    document.getElementById("gallery-grid").innerHTML = gItems.map((it) => `
-      <figure class="gcard reveal"><img src="${esc(it.image)}" alt="${esc(it.caption || "")}" class="gzoom" loading="lazy" />${it.caption ? `<figcaption>${esc(it.caption)}</figcaption>` : ""}</figure>`).join("");
-    gSec.style.display = "";
-  } else { gSec.style.display = "none"; }
-
-  // Video: dukung file unggahan/URL video langsung ATAU tautan YouTube (di kolom mana pun).
   const v = c.video || {};
-  const vSec = document.getElementById("video");
+  const mediaSec = document.getElementById("media");
+  const gItems = (g.items || []).filter((it) => it.image);
+  // Video: file unggahan/URL langsung ATAU tautan YouTube (di kolom mana pun).
   const ytFromFile = ytId(v.file);
   const ytid = ytId(v.youtube) || ytFromFile;
-  const fileVideo = v.file && !ytFromFile ? v.file : ""; // file yang benar-benar video (bukan link YouTube)
+  const fileVideo = v.file && !ytFromFile ? v.file : "";
+  const vframe = document.getElementById("video-frame");
   if (fileVideo || ytid) {
-    document.getElementById("videoHead").innerHTML = headHTML(v);
     if (fileVideo) {
       const poster = v.bgImage ? ` poster="${esc(v.bgImage)}"` : "";
-      document.getElementById("video-frame").innerHTML = `<div class="vwrap"><video controls playsinline preload="metadata"${poster} src="${esc(fileVideo)}"></video></div>`;
+      vframe.innerHTML = `<div class="vwrap"><video controls playsinline preload="metadata"${poster} src="${esc(fileVideo)}"></video></div>`;
     } else {
       const thumb = v.bgImage || `https://img.youtube.com/vi/${ytid}/hqdefault.jpg`;
-      document.getElementById("video-frame").innerHTML = `<div class="vwrap" style="background-image:linear-gradient(rgba(8,14,26,.4),rgba(8,14,26,.55)),url('${esc(thumb)}')"><button class="vplay" data-yt="${ytid}" aria-label="Putar video">▶</button></div>`;
+      vframe.innerHTML = `<div class="vwrap" style="background-image:linear-gradient(rgba(8,14,26,.4),rgba(8,14,26,.55)),url('${esc(thumb)}')"><button class="vplay" data-yt="${ytid}" aria-label="Putar video">▶</button></div>`;
     }
-    vSec.style.display = "";
-  } else { vSec.style.display = "none"; }
+    vframe.style.display = "";
+  } else { vframe.style.display = "none"; }
+  // Foto: slider
+  const slider = document.getElementById("gallery-slider");
+  if (gItems.length) {
+    document.getElementById("gallery-track").innerHTML = gItems.map((it) => `
+      <figure class="slide"><img src="${esc(it.image)}" alt="${esc(it.caption || "")}" class="gzoom" loading="lazy" />${it.caption ? `<figcaption>${esc(it.caption)}</figcaption>` : ""}</figure>`).join("");
+    document.getElementById("gallery-dots").innerHTML = gItems.length > 1 ? gItems.map((_, i) => `<button type="button" class="dot${i === 0 ? " active" : ""}" data-i="${i}" aria-label="Foto ${i + 1}"></button>`).join("") : "";
+    slider.style.display = "";
+  } else { slider.style.display = "none"; }
+  // Judul & tampil/sembunyi bagian
+  if (fileVideo || ytid || gItems.length) {
+    const headSrc = (g.titleHtml || g.kicker || g.lead) ? g : v;
+    document.getElementById("mediaHead").innerHTML = headHTML(headSrc);
+    mediaSec.style.display = "";
+  } else { mediaSec.style.display = "none"; }
 
   // Tentang
   const a = c.about;
@@ -151,9 +157,8 @@ function initInteractions() {
   grid.addEventListener("click", (e) => open(e.target.closest(".svc")));
   grid.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(e.target.closest(".svc")); } });
 
-  // Galeri -> lightbox
-  const gg = document.getElementById("gallery-grid");
-  if (gg) gg.addEventListener("click", (e) => { const img = e.target.closest("img.gzoom"); if (img) openLightbox(img.src, img.alt); });
+  // Slider foto galeri
+  initGallerySlider();
   // Video -> putar
   const vf = document.getElementById("video-frame");
   if (vf) vf.addEventListener("click", (e) => {
@@ -211,6 +216,50 @@ function openLightbox(src, alt) {
 function closeLightbox() {
   const lb = document.getElementById("lightbox"); if (!lb) return;
   lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = "";
+}
+
+/* ---------------- Slider foto galeri ---------------- */
+function initGallerySlider() {
+  const slider = document.getElementById("gallery-slider");
+  const track = document.getElementById("gallery-track");
+  if (!slider || !track || slider.style.display === "none") return;
+  const count = track.children.length;
+  if (!count) return;
+  const dots = [...slider.querySelectorAll(".dot")];
+  const btnPrev = document.getElementById("galPrev");
+  const btnNext = document.getElementById("galNext");
+  let idx = 0, timer = null, x0 = null, dragged = false;
+
+  const go = (n) => {
+    idx = (n + count) % count;
+    track.style.transform = `translateX(${-idx * 100}%)`;
+    dots.forEach((d, i) => d.classList.toggle("active", i === idx));
+  };
+  const next = () => go(idx + 1);
+  const prev = () => go(idx - 1);
+  const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
+  const start = () => { stop(); if (count > 1) timer = setInterval(next, 5000); };
+
+  if (count <= 1) { btnPrev.style.display = btnNext.style.display = "none"; }
+  btnNext.onclick = () => { next(); start(); };
+  btnPrev.onclick = () => { prev(); start(); };
+  dots.forEach((d) => (d.onclick = () => { go(+d.dataset.i); start(); }));
+
+  const vp = slider.querySelector(".slider-viewport");
+  vp.addEventListener("pointerdown", (e) => { x0 = e.clientX; dragged = false; stop(); });
+  vp.addEventListener("pointermove", (e) => { if (x0 != null && Math.abs(e.clientX - x0) > 10) dragged = true; });
+  vp.addEventListener("pointerup", (e) => {
+    if (x0 != null) { const dx = e.clientX - x0; if (Math.abs(dx) > 40) (dx < 0 ? next() : prev()); }
+    x0 = null; start();
+  });
+  // Ketuk foto (tanpa geser) -> lightbox
+  track.addEventListener("click", (e) => {
+    const img = e.target.closest("img.gzoom"); if (img && !dragged) openLightbox(img.src, img.alt);
+  });
+  slider.addEventListener("mouseenter", stop);
+  slider.addEventListener("mouseleave", start);
+
+  go(0); start();
 }
 
 /* ---------------- Navbar & global ---------------- */
