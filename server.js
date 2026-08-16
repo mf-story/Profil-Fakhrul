@@ -187,7 +187,15 @@ const server = http.createServer(async (req, res) => {
   fs.stat(filePath, (err, st) => {
     if (err || !st.isFile()) { res.writeHead(404); return res.end("404 Not Found"); }
     const ext = path.extname(filePath).toLowerCase();
-    res.writeHead(200, { "Content-Type": MIME[ext] || "application/octet-stream" });
+    const headers = { "Content-Type": MIME[ext] || "application/octet-stream" };
+    // Nama berkas unggahan berupa hash (isi tak berubah) → cache lama & immutable
+    headers["Cache-Control"] = isUpload
+      ? "public, max-age=31536000, immutable"
+      : "public, max-age=3600";
+    const etag = '"' + st.size.toString(16) + "-" + st.mtimeMs.toString(16) + '"';
+    headers["ETag"] = etag;
+    if (req.headers["if-none-match"] === etag) { res.writeHead(304, headers); return res.end(); }
+    res.writeHead(200, headers);
     fs.createReadStream(filePath).pipe(res);
   });
 });
