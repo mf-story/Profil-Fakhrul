@@ -190,7 +190,7 @@ function openCategory(key) {
       <span class="mw-ico" style="--g:${it.g}">${it.img ? `<img src="${esc(it.img)}" alt="${esc(it.name)}" loading="lazy">` : it.ico}</span>
       <div><span class="mw-tag">${esc(it.tag)}</span><h5>${esc(it.name)}</h5><p>${esc(it.desc)}</p></div>`;
     return it.id
-      ? `<a class="modal-work is-link" href="proyek.html?id=${encodeURIComponent(it.id)}">${inner}<span class="mw-go">→</span></a>`
+      ? `<a class="modal-work is-link" href="proyek.html?id=${encodeURIComponent(it.id)}&cat=${encodeURIComponent(key)}">${inner}<span class="mw-go">→</span></a>`
       : `<div class="modal-work">${inner}</div>`;
   }).join("");
   const modal = document.getElementById("workModal");
@@ -247,6 +247,9 @@ function initGlobal() {
     const r = await fetch("/api/content");
     CONTENT = await r.json();
     render();
+    // Jika datang dari daftar kategori (mis. kembali dari halaman detail), buka lagi daftarnya.
+    const cat = new URLSearchParams(location.search).get("cat");
+    if (cat && catTitles[cat]) { const s = document.getElementById("services"); if (s) s.scrollIntoView(); setTimeout(() => openCategory(cat), 250); }
   } catch (e) {
     document.getElementById("heroContent").innerHTML = '<p class="hero-sub">Gagal memuat konten. Jalankan lewat server (node server.js).</p>';
     console.error(e);

@@ -20,7 +20,7 @@
         <span class="logo-text">Muhammad Fakhrul</span>
       </a>
       <nav class="nav-links">
-        <a href="index.html#services">← Kembali</a>
+        <a href="index.html#services" id="backNav">← Kembali</a>
         <a href="index.html#contact" class="nav-cta">Hubungi Saya</a>
       </nav>
     </div>
@@ -44,7 +44,13 @@
 
   <script>
     const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-    const id = new URLSearchParams(location.search).get("id");
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+    const cat = params.get("cat");
+    // Kembali ke daftar kategori sebelumnya bila ada, jika tidak ke portofolio.
+    const backHref = cat ? ("index.html?cat=" + encodeURIComponent(cat) + "#services") : "index.html#services";
+    const backNav = document.getElementById("backNav");
+    if (backNav) backNav.href = backHref;
     const root = document.getElementById("detail").querySelector(".container");
     document.getElementById("year").textContent = new Date().getFullYear();
 
@@ -60,7 +66,7 @@
         ? `<h2 class="detail-sub">Tampilan Aplikasi</h2><div class="shots">${shots.map((s) => `<figure class="shot"><img src="${esc(s.src)}" alt="${esc(s.cap || p.name)}" loading="lazy" class="zoomable" /><figcaption>${esc(s.cap || "")}</figcaption></figure>`).join("")}</div>`
         : `<div class="no-shots">📷 Belum ada tangkapan layar untuk proyek ini.</div>`;
       root.innerHTML = `
-        <a href="index.html#services" class="back-link">← Kembali ke Portofolio</a>
+        <a href="${backHref}" class="back-link">← Kembali ke Portofolio</a>
         <div class="detail-hero">
           <div class="detail-cover"><img src="${esc(p.cover)}" alt="${esc(p.name)}" class="zoomable" /></div>
           <div class="detail-intro">
