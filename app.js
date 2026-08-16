@@ -18,6 +18,7 @@ const placeholders = {
 const catTitles = { web: "Web dan Aplikasi", edukasi: "Edukasi", foto: "Fotografi", video: "Video dan Drone" };
 
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function ytId(u) { if (!u) return ""; u = String(u).trim(); if (/^[\w-]{11}$/.test(u)) return u; const m = u.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : ""; }
 
 function projectItems(cat) {
   const order = CONTENT.projectsOrder || [];
@@ -92,6 +93,27 @@ function render() {
       </div>
     </div>`).join("");
 
+  // Galeri (tampil hanya bila ada gambar)
+  const g = c.gallery || { items: [] };
+  const gSec = document.getElementById("gallery");
+  if (g.items && g.items.length) {
+    document.getElementById("galleryHead").innerHTML = headHTML(g);
+    document.getElementById("gallery-grid").innerHTML = g.items.map((it) => `
+      <figure class="gcard reveal"><img src="${esc(it.image)}" alt="${esc(it.caption || "")}" class="gzoom" loading="lazy" />${it.caption ? `<figcaption>${esc(it.caption)}</figcaption>` : ""}</figure>`).join("");
+    gSec.style.display = "";
+  } else { gSec.style.display = "none"; }
+
+  // Video (tampil hanya bila ada YouTube)
+  const v = c.video || {};
+  const vSec = document.getElementById("video");
+  const vid = ytId(v.youtube);
+  if (vid) {
+    document.getElementById("videoHead").innerHTML = headHTML(v);
+    const thumb = v.bgImage || `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
+    document.getElementById("video-frame").innerHTML = `<div class="vwrap" style="background-image:linear-gradient(rgba(8,14,26,.4),rgba(8,14,26,.55)),url('${esc(thumb)}')"><button class="vplay" data-yt="${vid}" aria-label="Putar video">▶</button></div>`;
+    vSec.style.display = "";
+  } else { vSec.style.display = "none"; }
+
   // Tentang
   const a = c.about;
   document.getElementById("about-inner").innerHTML = `
@@ -133,6 +155,16 @@ function initInteractions() {
   grid.addEventListener("click", (e) => open(e.target.closest(".svc")));
   grid.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(e.target.closest(".svc")); } });
 
+  // Galeri -> lightbox
+  const gg = document.getElementById("gallery-grid");
+  if (gg) gg.addEventListener("click", (e) => { const img = e.target.closest("img.gzoom"); if (img) openLightbox(img.src, img.alt); });
+  // Video -> putar
+  const vf = document.getElementById("video-frame");
+  if (vf) vf.addEventListener("click", (e) => {
+    const btn = e.target.closest(".vplay"); if (!btn) return;
+    vf.innerHTML = `<div class="vwrap"><iframe src="https://www.youtube.com/embed/${btn.dataset.yt}?autoplay=1&rel=0" title="Video" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe></div>`;
+  });
+
   // Form kontak
   const form = document.getElementById("contactForm");
   const note = document.getElementById("formNote");
@@ -173,6 +205,18 @@ function closeModal() {
   document.body.style.overflow = "";
 }
 
+/* ---------------- Lightbox galeri ---------------- */
+function openLightbox(src, alt) {
+  const lb = document.getElementById("lightbox"); if (!lb) return;
+  const img = document.getElementById("lbImg");
+  img.src = src; img.alt = alt || "";
+  lb.classList.add("open"); lb.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden";
+}
+function closeLightbox() {
+  const lb = document.getElementById("lightbox"); if (!lb) return;
+  lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = "";
+}
+
 /* ---------------- Navbar & global ---------------- */
 function initGlobal() {
   const nav = document.getElementById("nav");
@@ -188,7 +232,12 @@ function initGlobal() {
   navLinks.querySelectorAll("a").forEach((x) => x.addEventListener("click", () => { navLinks.classList.remove("open"); navToggle.classList.remove("open"); }));
 
   document.getElementById("workModal").addEventListener("click", (e) => { if (e.target.hasAttribute("data-close")) closeModal(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeModal(); closeLightbox(); } });
+  const lb = document.getElementById("lightbox");
+  if (lb) {
+    document.getElementById("lbClose").addEventListener("click", closeLightbox);
+    lb.addEventListener("click", (e) => { if (e.target === lb) closeLightbox(); });
+  }
 }
 
 /* ---------------- Boot ---------------- */

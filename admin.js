@@ -116,6 +116,22 @@ const PANELS = {
       <div id="eduList">${(e.items || []).map((it, i) => eduRow(it, i)).join("")}</div>
       <button class="add-row" id="addEdu">+ Tambah pendidikan</button>`;
   },
+  gallery() {
+    const g = state.site.gallery || (state.site.gallery = { kicker: "Galeri", titleHtml: "Cuplikan <em>karya</em>", lead: "", items: [] });
+    return `<h2 class="cms-title">Galeri</h2>${head("site.gallery", g)}
+      <p class="muted" style="margin:-6px 0 12px">Bagian ini tampil di situs hanya jika ada minimal 1 foto.</p>
+      <div id="galList">${(g.items || []).map((it, i) => `<div class="cms-card"><div class="cms-card-top"><b>Foto ${i + 1}</b><button class="row-del" data-del-gal="${i}" style="display:inline-grid">×</button></div>
+        <div class="img-field"><div class="img-prev" id="galPrev${i}">${it.image ? `<img src="${esc(it.image)}">` : ""}</div><div class="img-ctrl"><input type="file" class="galFile" data-i="${i}" accept="image/*" /><input type="text" data-bind="site.gallery.items.${i}.image" value="${esc(it.image || "")}" placeholder="path/URL foto" /></div></div>
+        ${fld("Keterangan", `site.gallery.items.${i}.caption`, it.caption)}</div>`).join("")}</div>
+      <button class="add-row" id="addGal">+ Tambah foto</button>`;
+  },
+  video() {
+    const v = state.site.video || (state.site.video = { kicker: "Cara Kerja", titleHtml: "", lead: "", youtube: "", bgImage: "" });
+    return `<h2 class="cms-title">Video</h2>${head("site.video", v)}
+      <p class="muted" style="margin:-6px 0 12px">Bagian ini tampil hanya jika tautan YouTube diisi.</p>
+      ${fld("Tautan / ID YouTube", "site.video.youtube", v.youtube)}
+      <label class="fld"><span>Gambar sampul (opsional, default thumbnail YouTube)</span><div class="img-field"><div class="img-prev" id="vidPrev">${v.bgImage ? `<img src="${esc(v.bgImage)}">` : ""}</div><div class="img-ctrl"><input type="file" id="vidFile" accept="image/*" /><input type="text" data-bind="site.video.bgImage" value="${esc(v.bgImage || "")}" placeholder="path/URL gambar" /></div></div></label>`;
+  },
   experience() {
     const x = state.site.experience;
     return `<h2 class="cms-title">Pengalaman</h2>${head("site.experience", x)}
@@ -187,6 +203,15 @@ const AFTER = {
   education(panel) {
     $("#addEdu", panel).onclick = () => { state.site.education.items.push({ date: "", title: "Pendidikan baru", org: "", desc: "" }); switchPanel("education"); };
     panel.querySelectorAll("[data-del-edu]").forEach((b) => (b.onclick = () => { state.site.education.items.splice(+b.dataset.delEdu, 1); switchPanel("education"); }));
+  },
+  gallery(panel) {
+    $("#addGal", panel).onclick = () => { (state.site.gallery.items = state.site.gallery.items || []).push({ image: "", caption: "" }); switchPanel("gallery"); };
+    panel.querySelectorAll("[data-del-gal]").forEach((b) => (b.onclick = () => { state.site.gallery.items.splice(+b.dataset.delGal, 1); switchPanel("gallery"); }));
+    panel.querySelectorAll(".galFile").forEach((f) => (f.onchange = async (e) => { if (e.target.files[0]) { try { const url = await uploadFile(e.target.files[0]); state.site.gallery.items[+f.dataset.i].image = url; switchPanel("gallery"); toast("Foto diunggah."); } catch { toast("Gagal unggah", false); } } }));
+  },
+  video(panel) {
+    const f = $("#vidFile", panel);
+    if (f) f.onchange = async (e) => { if (e.target.files[0]) { try { const url = await uploadFile(e.target.files[0]); state.site.video.bgImage = url; switchPanel("video"); toast("Gambar diunggah."); } catch { toast("Gagal unggah", false); } } };
   },
   experience(panel) {
     $("#addExp", panel).onclick = () => { state.site.experience.items.push({ year: "", title: "Pengalaman baru", org: "", desc: "" }); switchPanel("experience"); };

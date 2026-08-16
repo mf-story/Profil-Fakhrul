@@ -20,6 +20,19 @@
       { "icon": "<rect x=\"6\" y=\"2\" width=\"12\" height=\"20\" rx=\"3\"/><path d=\"M11 18h2\"/>", "title": "Pengembang Website dan Aplikasi Web dan APK Android", "desc": "Membangun website modern serta mengembangkan aplikasi berbasis web maupun Android (APK) yang fungsional dan siap pakai.", "cat": "web", "wide": true }
     ]
   },
+  "gallery": {
+    "kicker": "Galeri",
+    "titleHtml": "Cuplikan <em>karya</em>",
+    "lead": "Beberapa tangkapan hasil kerja dari berbagai bidang.",
+    "items": []
+  },
+  "video": {
+    "kicker": "Cara Kerja",
+    "titleHtml": "Bagaimana saya <em>menciptakan karya</em>",
+    "lead": "Tonton cuplikan proses dan hasil karya saya.",
+    "youtube": "",
+    "bgImage": ""
+  },
   "experience": {
     "kicker": "Perjalanan",
     "titleHtml": "Pengalaman <em>profesional</em>",
