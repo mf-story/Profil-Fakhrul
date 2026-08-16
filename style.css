@@ -429,3 +429,33 @@ body.editing .row-del { display: inline-grid; place-items: center; }
 }
 
 
+
+/* ===== Panel Admin CMS ===== */
+.login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.login-card { width: min(100%, 380px); background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 34px; box-shadow: var(--shadow); text-align: center; }
+.login-card .logo-mark { margin: 0 auto 14px; }
+.login-card h1 { font-size: 1.5rem; }
+.login-card .muted { color: var(--muted); margin-bottom: 20px; font-size: .92rem; }
+.login-card .field { text-align: left; margin-top: 12px; }
+
+.cms-layout { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
+.cms-nav { position: sticky; top: 90px; display: grid; gap: 4px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 10px; }
+.cms-nav button { text-align: left; font-family: inherit; font-weight: 600; font-size: .92rem; padding: 10px 14px; border-radius: 10px; border: none; background: none; color: var(--muted); cursor: pointer; }
+.cms-nav button:hover { background: var(--bg-2); color: var(--ink); }
+.cms-nav button.active { background: var(--grad); color: #fff; }
+.cms-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 26px; box-shadow: var(--shadow-sm); min-height: 60vh; }
+.cms-title { font-size: 1.6rem; margin-bottom: 18px; }
+.cms-sub { font-size: 1.05rem; margin: 22px 0 12px; color: var(--brand-2); }
+.cms-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+.cms-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.fld.chk { flex-direction: row; align-items: center; gap: 8px; }
+.fld.chk input { width: auto; }
+.admin-cms { padding-top: 96px; }
+
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 500; padding: 12px 22px; border-radius: 999px; font-weight: 700; font-size: .9rem; color: #fff; background: var(--brand-2); box-shadow: var(--shadow); }
+.toast.err { background: #dc2626; }
+
+@media (max-width: 820px) {
+  .cms-layout { grid-template-columns: 1fr; }
+  .cms-nav { position: static; grid-auto-flow: column; overflow-x: auto; }
+}

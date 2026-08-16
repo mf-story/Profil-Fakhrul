@@ -4,272 +4,88 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <title>Panel Admin — Portofolio Muhammad Fakhrul</title>
+  <title>Panel Admin — Muhammad Fakhrul</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="detail-body admin-body">
-  <header class="nav scrolled">
-    <div class="container nav-inner">
-      <a href="index.html" class="logo">
-        <span class="logo-mark">MF</span>
-        <span class="logo-text">Panel Admin</span>
-      </a>
-      <nav class="nav-links">
-        <a href="index.html">Lihat Situs</a>
-        <a href="#" id="btnAdd" class="nav-cta">➕ Tambah Proyek</a>
-      </nav>
-    </div>
-  </header>
+  <!-- Login -->
+  <div class="login-wrap" id="loginScreen" hidden>
+    <form class="login-card" id="loginForm">
+      <span class="logo-mark">MF</span>
+      <h1>Panel Admin</h1>
+      <p class="muted">Masuk untuk mengelola isi situs.</p>
+      <div class="field"><input type="password" id="loginPw" placeholder=" " required /><label for="loginPw">Password</label></div>
+      <button class="btn btn-primary btn-full" type="submit">Masuk</button>
+      <p class="form-note" id="loginNote"></p>
+    </form>
+  </div>
 
-  <main class="admin">
-    <div class="container">
-      <div class="admin-head">
-        <div>
-          <span class="kicker">Kelola Portofolio</span>
-          <h1>Proyek Saya</h1>
-          <p class="lead">Tambah, ubah, hapus, dan atur urutan proyek. Perubahan tersimpan di browser ini — klik <b>Unduh projects.js</b> untuk menyimpannya permanen.</p>
-        </div>
-        <div class="admin-actions">
-          <button class="eb-btn" id="btnDownload">⬇️ Unduh projects.js</button>
-          <button class="eb-btn danger" id="btnResetAll">↺ Reset semua</button>
-        </div>
+  <!-- App -->
+  <div id="app" hidden>
+    <header class="nav scrolled">
+      <div class="container nav-inner">
+        <a href="index.html" class="logo"><span class="logo-mark">MF</span><span class="logo-text">Panel Admin</span></a>
+        <nav class="nav-links">
+          <a href="index.html" target="_blank">Lihat Situs ↗</a>
+          <button class="eb-btn primary" id="btnSave">💾 Simpan</button>
+          <button class="eb-btn" id="btnLogout">Keluar</button>
+        </nav>
       </div>
+    </header>
 
-      <div class="admin-list" id="list"></div>
-    </div>
-  </main>
+    <main class="admin admin-cms">
+      <div class="container cms-layout">
+        <aside class="cms-nav" id="cmsNav">
+          <button data-panel="hero" class="active">🏠 Hero</button>
+          <button data-panel="services">🧩 Keahlian</button>
+          <button data-panel="education">🎓 Pendidikan</button>
+          <button data-panel="experience">💼 Pengalaman</button>
+          <button data-panel="about">👤 Tentang</button>
+          <button data-panel="contact">✉️ Kontak</button>
+          <button data-panel="projects">📁 Proyek</button>
+          <button data-panel="settings">⚙️ Pengaturan</button>
+        </aside>
+        <section class="cms-panel" id="panel"></section>
+      </div>
+    </main>
+  </div>
 
-  <!-- Editor -->
-  <div class="editor" id="editor" aria-hidden="true">
-    <div class="editor-backdrop" data-eclose></div>
+  <!-- Editor proyek (modal) -->
+  <div class="editor" id="projEditor" aria-hidden="true">
+    <div class="editor-backdrop" data-pclose></div>
     <div class="editor-panel">
-      <div class="editor-top">
-        <h2 id="editorTitle">Tambah Proyek</h2>
-        <button class="modal-close" data-eclose aria-label="Tutup">✕</button>
-      </div>
-      <form id="form" class="editor-form">
-        <input type="hidden" id="f_id" />
+      <div class="editor-top"><h2 id="projEditorTitle">Proyek</h2><button class="modal-close" data-pclose>✕</button></div>
+      <form id="projForm" class="editor-form">
+        <input type="hidden" id="pf_id" />
         <div class="fgrid">
-          <label class="fld"><span>Nama proyek *</span><input type="text" id="f_name" required /></label>
-          <label class="fld"><span>Kategori</span>
-            <select id="f_cat">
-              <option value="web">Web dan Aplikasi</option>
-              <option value="edukasi">Edukasi</option>
-              <option value="foto">Fotografi</option>
-              <option value="video">Video dan Drone</option>
-            </select>
-          </label>
-          <label class="fld"><span>Tag / label</span><input type="text" id="f_tag" placeholder="mis. Web App · AI" /></label>
-          <label class="fld"><span>Tahun</span><input type="text" id="f_year" placeholder="mis. 2025" /></label>
-          <label class="fld fld-2"><span>Peran Anda</span><input type="text" id="f_role" placeholder="mis. Full-stack Developer" /></label>
+          <label class="fld"><span>Nama *</span><input type="text" id="pf_name" required /></label>
+          <label class="fld"><span>Kategori</span><select id="pf_cat"><option value="web">Web dan Aplikasi</option><option value="edukasi">Edukasi</option><option value="foto">Fotografi</option><option value="video">Video dan Drone</option></select></label>
+          <label class="fld"><span>Tag</span><input type="text" id="pf_tag" /></label>
+          <label class="fld"><span>Tahun</span><input type="text" id="pf_year" /></label>
+          <label class="fld fld-2"><span>Peran</span><input type="text" id="pf_role" /></label>
         </div>
-
-        <label class="fld"><span>Foto sampul (cover)</span>
-          <div class="img-field">
-            <div class="img-prev" id="coverPrev"></div>
-            <div class="img-ctrl">
-              <input type="file" id="f_coverFile" accept="image/*" />
-              <input type="text" id="f_cover" placeholder="atau path gambar, mis. assets/portfolio/nama.png" />
-            </div>
-          </div>
+        <label class="fld"><span>Foto sampul</span>
+          <div class="img-field"><div class="img-prev" id="pf_coverPrev"></div><div class="img-ctrl"><input type="file" id="pf_coverFile" accept="image/*" /><input type="text" id="pf_cover" placeholder="path/URL gambar" /></div></div>
         </label>
-
-        <label class="fld"><span>Ringkasan singkat</span><textarea id="f_summary" rows="2" placeholder="Satu-dua kalimat tentang proyek."></textarea></label>
-        <label class="fld"><span>Teknologi (pisahkan dengan koma)</span><input type="text" id="f_tech" placeholder="mis. React, Node.js, PWA" /></label>
-        <label class="fld"><span>Deskripsi (satu paragraf per baris)</span><textarea id="f_desc" rows="4"></textarea></label>
-        <label class="fld"><span>Fitur utama (satu fitur per baris)</span><textarea id="f_features" rows="4"></textarea></label>
-
-        <div class="fld">
-          <span>Tangkapan layar / foto</span>
-          <div class="shots-editor" id="shotsEditor"></div>
-          <button type="button" class="add-row" id="addShot" style="display:inline-block">+ Tambah foto</button>
-        </div>
-
-        <div class="editor-foot">
-          <button type="submit" class="btn btn-primary">💾 Simpan Proyek</button>
-          <button type="button" class="btn btn-outline" data-eclose>Batal</button>
-        </div>
+        <label class="fld"><span>Ringkasan</span><textarea id="pf_summary" rows="2"></textarea></label>
+        <label class="fld"><span>Teknologi (pisah koma)</span><input type="text" id="pf_tech" /></label>
+        <label class="fld"><span>Deskripsi (satu paragraf per baris)</span><textarea id="pf_desc" rows="4"></textarea></label>
+        <label class="fld"><span>Fitur (satu per baris)</span><textarea id="pf_features" rows="4"></textarea></label>
+        <div class="fld"><span>Tangkapan layar</span><div class="shots-editor" id="pf_shots"></div><button type="button" class="add-row" id="pf_addShot" style="display:inline-block">+ Tambah foto</button></div>
+        <div class="editor-foot"><button type="submit" class="btn btn-primary">💾 Simpan Proyek</button><button type="button" class="btn btn-outline" data-pclose>Batal</button></div>
       </form>
     </div>
   </div>
 
+  <div class="toast" id="toast" hidden></div>
+
   <template id="shotRowTpl">
-    <div class="shot-row">
-      <div class="img-prev sm"></div>
-      <div class="img-ctrl">
-        <input type="file" class="s-file" accept="image/*" />
-        <input type="text" class="s-src" placeholder="path atau gambar" />
-        <input type="text" class="s-cap" placeholder="Keterangan foto" />
-      </div>
-      <button type="button" class="row-del" title="Hapus" style="display:inline-grid">×</button>
-    </div>
+    <div class="shot-row"><div class="img-prev sm"></div><div class="img-ctrl"><input type="file" class="s-file" accept="image/*" /><input type="text" class="s-src" placeholder="path/URL" /><input type="text" class="s-cap" placeholder="Keterangan" /></div><button type="button" class="row-del" style="display:inline-grid">×</button></div>
   </template>
 
-  <script src="projects.js"></script>
-  <script>
-    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-    const listEl = document.getElementById("list");
-    const editor = document.getElementById("editor");
-    const catLabel = { web: "Web dan Aplikasi", edukasi: "Edukasi", foto: "Fotografi", video: "Video dan Drone" };
-
-    function renderList() {
-      const ids = window.PROJECTS_ORDER;
-      listEl.innerHTML = ids.map((id, idx) => {
-        const p = window.PROJECTS[id];
-        return `
-        <div class="admin-row" data-id="${id}">
-          <div class="ar-cover">${p.cover ? `<img src="${esc(p.cover)}" alt="">` : "📁"}</div>
-          <div class="ar-info">
-            <h3>${esc(p.name || "(tanpa nama)")}</h3>
-            <span class="ar-tag">${esc(p.tag || "")}</span>
-            <span class="ar-cat">${catLabel[p.cat] || p.cat || "web"}</span>
-          </div>
-          <div class="ar-actions">
-            <button class="eb-btn" data-move="up" ${idx === 0 ? "disabled" : ""} title="Naik">↑</button>
-            <button class="eb-btn" data-move="down" ${idx === ids.length - 1 ? "disabled" : ""} title="Turun">↓</button>
-            <button class="eb-btn" data-edit>✏️ Edit</button>
-            <button class="eb-btn danger" data-del>🗑️ Hapus</button>
-          </div>
-        </div>`;
-      }).join("");
-    }
-
-    /* ---------- Foto helpers ---------- */
-    function fileToDataURL(file) {
-      return new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = () => res(r.result);
-        r.onerror = rej;
-        r.readAsDataURL(file);
-      });
-    }
-    function setPreview(el, src) { el.innerHTML = src ? `<img src="${esc(src)}" alt="">` : ""; }
-
-    /* ---------- Shots editor ---------- */
-    const shotsEditor = document.getElementById("shotsEditor");
-    function addShotRow(shot) {
-      const tpl = document.getElementById("shotRowTpl").content.cloneNode(true);
-      const row = tpl.querySelector(".shot-row");
-      const prev = row.querySelector(".img-prev");
-      const file = row.querySelector(".s-file");
-      const src = row.querySelector(".s-src");
-      const cap = row.querySelector(".s-cap");
-      if (shot) { src.value = shot.src || ""; cap.value = shot.cap || ""; setPreview(prev, shot.src); }
-      file.addEventListener("change", async () => {
-        if (file.files[0]) { const d = await fileToDataURL(file.files[0]); src.value = d; setPreview(prev, d); }
-      });
-      src.addEventListener("input", () => setPreview(prev, src.value));
-      row.querySelector(".row-del").addEventListener("click", () => row.remove());
-      shotsEditor.appendChild(row);
-    }
-
-    /* ---------- Buka editor ---------- */
-    function openEditor(id) {
-      const p = id ? window.PROJECTS[id] : null;
-      document.getElementById("editorTitle").textContent = id ? "Edit Proyek" : "Tambah Proyek";
-      document.getElementById("f_id").value = id || "";
-      document.getElementById("f_name").value = p ? p.name || "" : "";
-      document.getElementById("f_cat").value = p ? p.cat || "web" : "web";
-      document.getElementById("f_tag").value = p ? p.tag || "" : "";
-      document.getElementById("f_year").value = p ? p.year || "" : "";
-      document.getElementById("f_role").value = p ? p.role || "" : "";
-      document.getElementById("f_cover").value = p ? p.cover || "" : "";
-      setPreview(document.getElementById("coverPrev"), p ? p.cover : "");
-      document.getElementById("f_summary").value = p ? p.summary || "" : "";
-      document.getElementById("f_tech").value = p && p.tech ? p.tech.join(", ") : "";
-      document.getElementById("f_desc").value = p && p.desc ? p.desc.join("\n") : "";
-      document.getElementById("f_features").value = p && p.features ? p.features.join("\n") : "";
-      shotsEditor.innerHTML = "";
-      (p && p.shots ? p.shots : []).forEach(addShotRow);
-      editor.classList.add("open");
-      editor.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-    }
-    function closeEditor() {
-      editor.classList.remove("open");
-      editor.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-    }
-
-    // Cover file → dataURL
-    document.getElementById("f_coverFile").addEventListener("change", async (e) => {
-      if (e.target.files[0]) {
-        const d = await fileToDataURL(e.target.files[0]);
-        document.getElementById("f_cover").value = d;
-        setPreview(document.getElementById("coverPrev"), d);
-      }
-    });
-    document.getElementById("f_cover").addEventListener("input", (e) => setPreview(document.getElementById("coverPrev"), e.target.value));
-    document.getElementById("addShot").addEventListener("click", () => addShotRow());
-
-    /* ---------- Simpan ---------- */
-    document.getElementById("form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const lines = (v) => v.split("\n").map((s) => s.trim()).filter(Boolean);
-      const shots = [...shotsEditor.querySelectorAll(".shot-row")].map((r) => ({
-        src: r.querySelector(".s-src").value.trim(),
-        cap: r.querySelector(".s-cap").value.trim(),
-      })).filter((s) => s.src);
-      const data = {
-        name: document.getElementById("f_name").value.trim(),
-        cat: document.getElementById("f_cat").value,
-        tag: document.getElementById("f_tag").value.trim(),
-        year: document.getElementById("f_year").value.trim(),
-        role: document.getElementById("f_role").value.trim(),
-        cover: document.getElementById("f_cover").value.trim(),
-        summary: document.getElementById("f_summary").value.trim(),
-        tech: document.getElementById("f_tech").value.split(",").map((s) => s.trim()).filter(Boolean),
-        desc: lines(document.getElementById("f_desc").value),
-        features: lines(document.getElementById("f_features").value),
-        shots,
-      };
-      const id = document.getElementById("f_id").value;
-      try {
-        if (id) window.PF.save(id, data);
-        else window.PF.addProject(data);
-        closeEditor();
-        renderList();
-      } catch (err) {
-        alert("Gagal menyimpan. Foto mungkin terlalu besar untuk penyimpanan browser.\nGunakan gambar lebih kecil atau path file.\n\n(" + err.message + ")");
-      }
-    });
-
-    /* ---------- Aksi daftar ---------- */
-    document.getElementById("btnAdd").addEventListener("click", (e) => { e.preventDefault(); openEditor(null); });
-    listEl.addEventListener("click", (e) => {
-      const row = e.target.closest(".admin-row"); if (!row) return;
-      const id = row.dataset.id;
-      if (e.target.closest("[data-edit]")) openEditor(id);
-      else if (e.target.closest("[data-del]")) {
-        if (confirm("Hapus proyek \"" + (window.PROJECTS[id].name || id) + "\"?")) { window.PF.deleteProject(id); renderList(); }
-      } else if (e.target.closest('[data-move="up"]')) { moveProject(id, -1); }
-      else if (e.target.closest('[data-move="down"]')) { moveProject(id, 1); }
-    });
-    function moveProject(id, dir) {
-      const arr = window.PROJECTS_ORDER;
-      const i = arr.indexOf(id);
-      const j = i + dir;
-      if (i < 0 || j < 0 || j >= arr.length) return;
-      arr.splice(j, 0, arr.splice(i, 1)[0]);
-      window.PF.saveOrder();
-      renderList();
-    }
-
-    editor.addEventListener("click", (e) => { if (e.target.hasAttribute("data-eclose")) closeEditor(); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeEditor(); });
-    document.getElementById("btnDownload").addEventListener("click", () => window.PF.download());
-    document.getElementById("btnResetAll").addEventListener("click", () => {
-      if (confirm("Hapus SEMUA perubahan (tambah/edit/hapus) dan kembalikan ke bawaan?")) { window.PF.resetAll(); location.reload(); }
-    });
-
-    renderList();
-
-    // Jika dibuka dari halaman detail (admin.html?edit=id), langsung buka editornya.
-    const editId = new URLSearchParams(location.search).get("edit");
-    if (editId && window.PROJECTS[editId]) openEditor(editId);
-  </script>
+  <script src="admin.js"></script>
 </body>
 </html>

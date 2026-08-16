@@ -1,16 +1,12 @@
-# Menyajikan situs statis dengan Nginx (untuk Coolify / Docker)
-FROM nginx:alpine
+# Menjalankan situs + panel admin dengan Node.js
+FROM node:20-alpine
+WORKDIR /app
 
-# Konfigurasi Nginx (gzip + cache)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Salin semua berkas aplikasi
+COPY . .
 
-# Salin seluruh berkas situs ke folder web Nginx
-COPY . /usr/share/nginx/html
-
-# Bersihkan berkas yang tidak perlu disajikan
-RUN rm -f /usr/share/nginx/html/Dockerfile \
-          /usr/share/nginx/html/.dockerignore \
-          /usr/share/nginx/html/nginx.conf \
-          /usr/share/nginx/html/serve.ps1
-
+# Data & unggahan disimpan di folder ini (pasang Persistent Storage di Coolify)
+ENV PORT=80
 EXPOSE 80
+
+CMD ["node", "server.js"]

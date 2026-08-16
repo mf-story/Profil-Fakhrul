@@ -33,81 +33,62 @@
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="hero" id="hero">
-    <div class="hero-bg"></div>
-    <div class="container hero-inner">
-      <span class="eyebrow reveal">Pendidik · Kreator Visual · Developer</span>
-      <h1 class="hero-title reveal">
-        Menciptakan karya yang<br /><em>bermakna</em> dan <em>berdampak</em>.
-      </h1>
-      <p class="hero-sub reveal">
-        Saya <strong>Muhammad Fakhrul</strong> — memadukan dunia pendidikan,
-        seni visual, dan teknologi untuk menghadirkan cerita yang menggugah,
-        dari lensa kamera hingga baris kode.
-      </p>
-      <div class="hero-actions reveal">
-        <a href="#portfolio" class="btn btn-primary">Lihat Karya Saya</a>
-        <a href="#contact" class="btn btn-outline">Mari Berkolaborasi</a>
-      </div>
-    </div>
-    <a href="#services" class="scroll-cue" aria-label="Gulir ke bawah"><span></span>Gulir</a>
-  </section>
+  <main>
+    <!-- Hero -->
+    <section class="hero" id="hero">
+      <div class="hero-bg"></div>
+      <div class="container hero-inner" id="heroContent"></div>
+      <a href="#services" class="scroll-cue" aria-label="Gulir ke bawah"><span></span>Gulir</a>
+    </section>
 
-  <!-- Services / Keahlian -->
-  <section class="section" id="services">
-    <div class="container">
-      <div class="head reveal">
-        <span class="kicker">Keahlian</span>
-        <h2>Apa yang saya <em>kerjakan</em></h2>
-        <p class="lead">Multidisiplin — dari mendidik, menangkap momen, hingga membangun produk digital. Klik untuk melihat karyanya.</p>
+    <!-- Keahlian -->
+    <section class="section" id="services">
+      <div class="container">
+        <div class="head reveal" id="servicesHead"></div>
+        <div class="services" id="services-grid"></div>
       </div>
-      <div class="services" id="services-grid">
-        <article class="svc reveal" data-cat="edukasi" role="button" tabindex="0">
-          <div class="svc-ico">
-            <svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/></svg>
-          </div>
-          <h3>Pendidik</h3>
-          <p>Merancang dan menyampaikan pembelajaran yang inspiratif dan mudah dipahami.</p>
-          <span class="svc-more">Lihat karya →</span>
-        </article>
-        <article class="svc reveal" data-cat="foto" role="button" tabindex="0">
-          <div class="svc-ico">
-            <svg viewBox="0 0 24 24"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4l-1.5-2Z"/><circle cx="12" cy="13" r="3.5"/></svg>
-          </div>
-          <h3>Fotografer</h3>
-          <p>Menangkap momen dengan komposisi kuat dan pencahayaan yang tepat.</p>
-          <span class="svc-more">Lihat karya →</span>
-        </article>
-        <article class="svc reveal" data-cat="video" role="button" tabindex="0">
-          <div class="svc-ico">
-            <svg viewBox="0 0 24 24"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-4v12l-6-4"/></svg>
-          </div>
-          <h3>Videografer dan Pilot Drone</h3>
-          <p>Memproduksi video sinematik dan mengambil footage udara yang dramatis dengan presisi tinggi.</p>
-          <span class="svc-more">Lihat karya →</span>
-        </article>
-        <article class="svc reveal" data-cat="video" role="button" tabindex="0">
-          <div class="svc-ico">
-            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg>
-          </div>
-          <h3>Editor</h3>
-          <p>Menyunting foto dan video hingga menghasilkan visual yang rapi dan berkelas.</p>
-          <span class="svc-more">Lihat karya →</span>
-        </article>
-        <article class="svc reveal svc-wide" data-cat="web" role="button" tabindex="0">
-          <div class="svc-ico">
-            <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
-          </div>
-          <h3>Pengembang Website dan Aplikasi Web dan APK Android</h3>
-          <p>Membangun website modern serta mengembangkan aplikasi berbasis web maupun Android (APK) yang fungsional dan siap pakai.</p>
-          <span class="svc-more">Lihat karya →</span>
-        </article>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Modal daftar karya (dipakai oleh kartu keahlian) -->
+    <!-- Pendidikan -->
+    <section class="section section-dark" id="education">
+      <div class="container">
+        <div class="head reveal" id="educationHead"></div>
+        <div class="edu-grid" id="education-grid"></div>
+      </div>
+    </section>
+
+    <!-- Pengalaman -->
+    <section class="section" id="experience">
+      <div class="container">
+        <div class="head reveal" id="experienceHead"></div>
+        <div class="timeline" id="experience-list"></div>
+      </div>
+    </section>
+
+    <!-- Tentang -->
+    <section class="section section-dark" id="about">
+      <div class="container about-grid" id="about-inner"></div>
+    </section>
+
+    <!-- Kontak -->
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="head reveal" id="contactHead"></div>
+        <div class="contact-grid">
+          <div class="contact-info reveal" id="contact-info"></div>
+          <form class="contact-form reveal" id="contactForm" novalidate>
+            <div class="field"><input type="text" id="name" name="name" placeholder=" " required /><label for="name">Nama Anda</label></div>
+            <div class="field"><input type="email" id="email" name="email" placeholder=" " required /><label for="email">Email Anda</label></div>
+            <div class="field"><textarea id="message" name="message" rows="4" placeholder=" " required></textarea><label for="message">Ceritakan proyek Anda</label></div>
+            <button type="submit" class="btn btn-primary btn-full">Kirim Pesan</button>
+            <p class="form-note" id="formNote"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal daftar karya -->
   <div class="modal" id="workModal" aria-hidden="true">
     <div class="modal-backdrop" data-close></div>
     <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -117,140 +98,6 @@
       <div class="modal-list" id="modalList"></div>
     </div>
   </div>
-
-  <!-- Education -->
-  <section class="section" id="education">
-    <div class="container">
-      <div class="head reveal">
-        <span class="kicker">Pendidikan</span>
-        <h2>Latar belakang <em>akademik</em></h2>
-      </div>
-      <div class="edu-grid">
-        <div class="edu-card reveal">
-          <span class="edu-date">2010 — 2015</span>
-          <h4>S-1 Pendidikan Guru Sekolah Dasar</h4>
-          <p class="edu-org">Universitas Muhammadiyah Makassar</p>
-          <p>Menempuh pendidikan sarjana di bidang Pendidikan Guru Sekolah Dasar (PGSD).</p>
-        </div>
-        <div class="edu-card reveal">
-          <span class="edu-date">2015 — 2018</span>
-          <h4>S-2 Administrasi Pendidikan</h4>
-          <p class="edu-org">Universitas Negeri Makassar</p>
-          <p>Menempuh pendidikan magister di bidang Administrasi Pendidikan.</p>
-        </div>
-        <div class="edu-card reveal">
-          <span class="edu-date">2026 — Sekarang</span>
-          <h4>S-3 Pendidikan</h4>
-          <p class="edu-org">Universitas Muhammadiyah Makassar</p>
-          <p>Menempuh pendidikan doktoral di bidang Pendidikan.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Experience -->
-  <section class="section section-dark" id="experience">
-    <div class="container">
-      <div class="head reveal">
-        <span class="kicker">Perjalanan</span>
-        <h2>Pengalaman <em>profesional</em></h2>
-      </div>
-      <div class="timeline">
-        <div class="tl-item reveal">
-          <span class="tl-year">2015 — Sekarang</span>
-          <div class="tl-body">
-            <h4>Pendidik dan Kreator Konten Digital</h4>
-            <p class="tl-org">Independen / Profesional</p>
-            <p>Mengajar sekaligus memproduksi konten edukatif visual — foto, video, dan materi pembelajaran interaktif.</p>
-          </div>
-        </div>
-        <div class="tl-item reveal">
-          <span class="tl-year">2015 — Sekarang</span>
-          <div class="tl-body">
-            <h4>Fotografer dan Videografer</h4>
-            <p class="tl-org">Independen / Profesional</p>
-            <p>Menangani pemotretan, videografi, dan dokumentasi visual dengan komposisi dan pencahayaan yang tepat.</p>
-          </div>
-        </div>
-        <div class="tl-item reveal">
-          <span class="tl-year">2025 — Sekarang</span>
-          <div class="tl-body">
-            <h4>Pengembang Website dan Aplikasi</h4>
-            <p class="tl-org">Independen / Profesional</p>
-            <p>Membangun website dan aplikasi berbasis web serta Android (APK) sesuai kebutuhan.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- About -->
-  <section class="section" id="about">
-    <div class="container about-grid">
-      <div class="about-visual reveal">
-        <div class="about-frame"><span>MF</span></div>
-        <div class="about-badge">✦ Creative Professional</div>
-      </div>
-      <div class="about-body reveal">
-        <span class="kicker">Tentang Saya</span>
-        <h2>Satu orang, <em>banyak lensa</em></h2>
-        <p>
-          Halo, saya <strong>Muhammad Fakhrul</strong>. Saya percaya bahwa
-          pendidikan, seni, dan teknologi bukan dunia yang terpisah — ketiganya
-          saling melengkapi untuk menciptakan karya yang bermakna.
-        </p>
-        <p>
-          Sebagai pendidik, saya senang berbagi ilmu. Di balik kamera dan
-          kendali drone, saya menangkap keindahan dari sudut yang tak biasa.
-          Dan lewat kode, saya mewujudkan ide menjadi produk digital yang nyata.
-        </p>
-        <ul class="about-points">
-          <li><span>✓</span> Berbasis di Makassar, Indonesia</li>
-          <li><span>✓</span> Fokus: pendidikan, media visual dan produk digital</li>
-          <li><span>✓</span> Detail, disiplin, dan berorientasi hasil</li>
-          <li><span>✓</span> Terbuka untuk kolaborasi dan proyek profesional</li>
-        </ul>
-        <a href="#contact" class="btn btn-primary">Ajak Bekerja Sama</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact -->
-  <section class="section section-dark" id="contact">
-    <div class="container">
-      <div class="head reveal">
-        <span class="kicker">Kontak</span>
-        <h2>Mari <em>berkolaborasi</em></h2>
-        <p class="lead">Punya proyek, acara, atau ide yang ingin diwujudkan? Saya siap membantu.</p>
-      </div>
-      <div class="contact-grid">
-        <div class="contact-info reveal">
-          <a href="mailto:muhammad.fahrul@unismuh.ac.id" class="contact-item">
-            <span class="ci-ico">✉️</span><div><b>Email</b><p>muhammad.fahrul@unismuh.ac.id</p></div>
-          </a>
-          <a href="https://wa.me/xxxx" class="contact-item" target="_blank" rel="noopener">
-            <span class="ci-ico">💬</span><div><b>WhatsApp</b><p>xxxx</p></div>
-          </a>
-          <div class="contact-item">
-            <span class="ci-ico">📍</span><div><b>Lokasi</b><p>Makassar, Indonesia</p></div>
-          </div>
-          <div class="socials">
-            <a href="#" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
-            <a href="#" target="_blank" rel="noopener" aria-label="YouTube">YT</a>
-            <a href="#" target="_blank" rel="noopener" aria-label="LinkedIn">in</a>
-            <a href="#" target="_blank" rel="noopener" aria-label="GitHub">GH</a>
-          </div>
-        </div>
-        <form class="contact-form reveal" id="contactForm" novalidate>
-          <div class="field"><input type="text" id="name" name="name" placeholder=" " required /><label for="name">Nama Anda</label></div>
-          <div class="field"><input type="email" id="email" name="email" placeholder=" " required /><label for="email">Email Anda</label></div>
-          <div class="field"><textarea id="message" name="message" rows="4" placeholder=" " required></textarea><label for="message">Ceritakan proyek Anda</label></div>
-          <button type="submit" class="btn btn-primary btn-full">Kirim Pesan</button>
-          <p class="form-note" id="formNote"></p>
-        </form>
-      </div>
-    </div>
-  </section>
 
   <footer class="footer">
     <div class="container footer-inner">
@@ -262,7 +109,6 @@
     </div>
   </footer>
 
-  <script src="projects.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

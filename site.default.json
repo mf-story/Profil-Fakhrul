@@ -1,0 +1,72 @@
+{
+  "brand": { "name": "Muhammad Fakhrul", "initials": "MF" },
+  "hero": {
+    "eyebrow": "Pendidik · Kreator Visual · Developer",
+    "titleHtml": "Menciptakan karya yang<br /><em>bermakna</em> dan <em>berdampak</em>.",
+    "subtitleHtml": "Saya <strong>Muhammad Fakhrul</strong> — memadukan dunia pendidikan, seni visual, dan teknologi untuk menghadirkan cerita yang menggugah, dari lensa kamera hingga baris kode.",
+    "btnPrimary": "Lihat Karya Saya",
+    "btnSecondary": "Mari Berkolaborasi"
+  },
+  "services": {
+    "kicker": "Keahlian",
+    "titleHtml": "Apa yang saya <em>kerjakan</em>",
+    "lead": "Multidisiplin — dari mendidik, menangkap momen, hingga membangun produk digital. Klik untuk melihat karyanya.",
+    "items": [
+      { "icon": "<path d=\"M22 10 12 5 2 10l10 5 10-5Z\"/><path d=\"M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5\"/>", "title": "Pendidik", "desc": "Merancang dan menyampaikan pembelajaran yang inspiratif dan mudah dipahami.", "cat": "edukasi", "wide": false },
+      { "icon": "<path d=\"M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4l-1.5-2Z\"/><circle cx=\"12\" cy=\"13\" r=\"3.5\"/>", "title": "Fotografer", "desc": "Menangkap momen dengan komposisi kuat dan pencahayaan yang tepat.", "cat": "foto", "wide": false },
+      { "icon": "<rect x=\"2\" y=\"6\" width=\"14\" height=\"12\" rx=\"2\"/><path d=\"m16 10 6-4v12l-6-4\"/>", "title": "Videografer dan Pilot Drone", "desc": "Memproduksi video sinematik dan mengambil footage udara yang dramatis dengan presisi tinggi.", "cat": "video", "wide": false },
+      { "icon": "<path d=\"M12 20h9\"/><path d=\"M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z\"/>", "title": "Editor", "desc": "Menyunting foto dan video hingga menghasilkan visual yang rapi dan berkelas.", "cat": "video", "wide": false },
+      { "icon": "<rect x=\"6\" y=\"2\" width=\"12\" height=\"20\" rx=\"3\"/><path d=\"M11 18h2\"/>", "title": "Pengembang Website dan Aplikasi Web dan APK Android", "desc": "Membangun website modern serta mengembangkan aplikasi berbasis web maupun Android (APK) yang fungsional dan siap pakai.", "cat": "web", "wide": true }
+    ]
+  },
+  "experience": {
+    "kicker": "Perjalanan",
+    "titleHtml": "Pengalaman <em>profesional</em>",
+    "items": [
+      { "year": "2015 — Sekarang", "title": "Pendidik dan Kreator Konten Digital", "org": "Independen / Profesional", "desc": "Mengajar sekaligus memproduksi konten edukatif visual — foto, video, dan materi pembelajaran interaktif." },
+      { "year": "2015 — Sekarang", "title": "Fotografer dan Videografer", "org": "Independen / Profesional", "desc": "Menangani pemotretan, videografi, dan dokumentasi visual dengan komposisi dan pencahayaan yang tepat." },
+      { "year": "2025 — Sekarang", "title": "Pengembang Website dan Aplikasi", "org": "Independen / Profesional", "desc": "Membangun website dan aplikasi berbasis web serta Android (APK) sesuai kebutuhan." }
+    ]
+  },
+  "education": {
+    "kicker": "Pendidikan",
+    "titleHtml": "Latar belakang <em>akademik</em>",
+    "items": [
+      { "date": "2010 — 2015", "title": "S-1 Pendidikan Guru Sekolah Dasar", "org": "Universitas Muhammadiyah Makassar", "desc": "Menempuh pendidikan sarjana di bidang Pendidikan Guru Sekolah Dasar (PGSD)." },
+      { "date": "2015 — 2018", "title": "S-2 Administrasi Pendidikan", "org": "Universitas Negeri Makassar", "desc": "Menempuh pendidikan magister di bidang Administrasi Pendidikan." },
+      { "date": "2026 — Sekarang", "title": "S-3 Pendidikan", "org": "Universitas Muhammadiyah Makassar", "desc": "Menempuh pendidikan doktoral di bidang Pendidikan." }
+    ]
+  },
+  "about": {
+    "kicker": "Tentang Saya",
+    "titleHtml": "Satu orang, <em>banyak lensa</em>",
+    "frameInitials": "MF",
+    "badge": "✦ Creative Professional",
+    "paragraphs": [
+      "Halo, saya <strong>Muhammad Fakhrul</strong>. Saya percaya bahwa pendidikan, seni, dan teknologi bukan dunia yang terpisah — ketiganya saling melengkapi untuk menciptakan karya yang bermakna.",
+      "Sebagai pendidik, saya senang berbagi ilmu. Di balik kamera dan kendali drone, saya menangkap keindahan dari sudut yang tak biasa. Dan lewat kode, saya mewujudkan ide menjadi produk digital yang nyata."
+    ],
+    "points": [
+      "Berbasis di Makassar, Indonesia",
+      "Fokus: pendidikan, media visual dan produk digital",
+      "Detail, disiplin, dan berorientasi hasil",
+      "Terbuka untuk kolaborasi dan proyek profesional"
+    ],
+    "btn": "Ajak Bekerja Sama"
+  },
+  "contact": {
+    "kicker": "Kontak",
+    "titleHtml": "Mari <em>berkolaborasi</em>",
+    "lead": "Punya proyek, acara, atau ide yang ingin diwujudkan? Saya siap membantu.",
+    "email": "muhammad.fahrul@unismuh.ac.id",
+    "whatsappNumber": "xxxx",
+    "whatsappLabel": "xxxx",
+    "location": "Makassar, Indonesia",
+    "socials": [
+      { "label": "IG", "url": "#" },
+      { "label": "YT", "url": "#" },
+      { "label": "in", "url": "#" },
+      { "label": "GH", "url": "#" }
+    ]
+  }
+}

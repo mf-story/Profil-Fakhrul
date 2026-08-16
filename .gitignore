@@ -1,15 +1,11 @@
-# OS & editor
-Thumbs.db
+﻿Thumbs.db
 desktop.ini
 .DS_Store
 .vscode/
-
-# Dependensi (jika nanti ada)
 node_modules/
-
-# Memori agen / catatan lokal
 /memories/
-
-# Berkas sementara
+data/
+uploads/
 *_tmp.*
 assets/_*.png
+Dockerfile.new

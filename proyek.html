@@ -20,19 +20,16 @@
         <span class="logo-text">Muhammad Fakhrul</span>
       </a>
       <nav class="nav-links">
-        <a href="index.html#portfolio">← Kembali ke Portofolio</a>
+        <a href="index.html#services">← Kembali</a>
         <a href="index.html#contact" class="nav-cta">Hubungi Saya</a>
       </nav>
     </div>
   </header>
 
   <main class="detail" id="detail">
-    <div class="container">
-      <p class="detail-loading">Memuat…</p>
-    </div>
+    <div class="container"><p class="detail-loading">Memuat…</p></div>
   </main>
 
-  <!-- Lightbox -->
   <div class="lightbox" id="lightbox" aria-hidden="true">
     <button class="lb-close" id="lbClose" aria-label="Tutup">✕</button>
     <img id="lbImg" alt="" />
@@ -41,105 +38,67 @@
   <footer class="footer">
     <div class="container footer-inner">
       <p>© <span id="year"></span> Muhammad Fakhrul — Creative Professional</p>
-      <a href="index.html#portfolio" class="to-top">← Semua proyek</a>
+      <a href="index.html#services" class="to-top">← Semua proyek</a>
     </div>
   </footer>
 
-  <script src="projects.js"></script>
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-    const id = new URLSearchParams(location.search).get("id");
-    const p = window.PROJECTS && window.PROJECTS[id];
-    const root = document.getElementById("detail").querySelector(".container");
     const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const id = new URLSearchParams(location.search).get("id");
+    const root = document.getElementById("detail").querySelector(".container");
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-    if (!p) {
-      root.innerHTML = '<div class="detail-head"><h1>Proyek tidak ditemukan</h1><p class="lead">Kembali ke <a href="index.html#portfolio">daftar portofolio</a>.</p></div>';
-      document.getElementById("editBar").style.display = "none";
-    } else {
-      render();
-    }
-
-    function shotHTML(s) {
-      return `
-        <figure class="shot" data-shot>
-          <button class="row-del" title="Hapus foto" data-del="shot">×</button>
-          <img src="${esc(s.src)}" alt="${esc(s.cap || p.name)}" loading="lazy" class="zoomable" />
-          <figcaption data-edit="cap">${esc(s.cap || "")}</figcaption>
-        </figure>`;
-    }
-    function featHTML(f) {
-      return `<li><span class="fk">✓</span><span data-edit="feature">${esc(f)}</span><button class="row-del" title="Hapus" data-del="feat">×</button></li>`;
-    }
-    function descHTML(d) {
-      return `<div class="erow"><p data-edit="desc">${esc(d)}</p><button class="row-del" title="Hapus" data-del="desc">×</button></div>`;
-    }
-
-    function render() {
+    (async function () {
+      let content;
+      try { content = await (await fetch("/api/content")).json(); }
+      catch (e) { root.innerHTML = '<h1>Gagal memuat</h1>'; return; }
+      const p = content.projects && content.projects[id];
+      if (!p) { root.innerHTML = '<div class="detail-head"><h1>Proyek tidak ditemukan</h1><p class="lead">Kembali ke <a href="index.html#services">portofolio</a>.</p></div>'; return; }
       document.title = p.name + " — Muhammad Fakhrul";
-      const shots = (p.shots || []);
+      const shots = p.shots || [];
+      const shotsBlock = shots.length
+        ? `<h2 class="detail-sub">Tampilan Aplikasi</h2><div class="shots">${shots.map((s) => `<figure class="shot"><img src="${esc(s.src)}" alt="${esc(s.cap || p.name)}" loading="lazy" class="zoomable" /><figcaption>${esc(s.cap || "")}</figcaption></figure>`).join("")}</div>`
+        : `<div class="no-shots">📷 Belum ada tangkapan layar untuk proyek ini.</div>`;
       root.innerHTML = `
-        <a href="index.html#portfolio" class="back-link">← Kembali ke Portofolio</a>
+        <a href="index.html#services" class="back-link">← Kembali ke Portofolio</a>
         <div class="detail-hero">
-          <div class="detail-cover"><img src="${esc(p.cover)}" alt="${esc(p.name)}" class="zoomable" data-cover /></div>
+          <div class="detail-cover"><img src="${esc(p.cover)}" alt="${esc(p.name)}" class="zoomable" /></div>
           <div class="detail-intro">
-            <span class="kicker" data-edit="tag">${esc(p.tag)}</span>
-            <h1 data-edit="name">${esc(p.name)}</h1>
-            <p class="lead" data-edit="summary">${esc(p.summary)}</p>
+            <span class="kicker">${esc(p.tag)}</span>
+            <h1>${esc(p.name)}</h1>
+            <p class="lead">${esc(p.summary)}</p>
             <div class="meta-row">
-              <div class="meta"><span>Tahun</span><b data-edit="year">${esc(p.year || "-")}</b></div>
-              <div class="meta"><span>Peran</span><b data-edit="role">${esc(p.role || "-")}</b></div>
+              <div class="meta"><span>Tahun</span><b>${esc(p.year || "-")}</b></div>
+              <div class="meta"><span>Peran</span><b>${esc(p.role || "-")}</b></div>
             </div>
             <div class="tech">${(p.tech || []).map((t) => `<span>${esc(t)}</span>`).join("")}</div>
           </div>
         </div>
-
         <div class="detail-grid">
           <div class="detail-main">
             <h2 class="detail-sub">Tentang Proyek</h2>
-            <div id="descList">${(p.desc || []).map(descHTML).join("")}</div>
-            <button class="add-row" data-add="desc">+ Tambah paragraf</button>
-
-            <h2 class="detail-sub">Tampilan Aplikasi</h2>
-            ${shots.length ? "" : '<div class="no-shots" id="noShots">📷 Belum ada tangkapan layar untuk proyek ini.</div>'}
-            <div class="shots" id="shotsList">${shots.map(shotHTML).join("")}</div>
-            <button class="add-row" data-add="shot">+ Tambah foto</button>
+            ${(p.desc || []).map((d) => `<p>${esc(d)}</p>`).join("")}
+            ${shotsBlock}
           </div>
           <aside class="detail-side">
             <h3>Fitur Utama</h3>
-            <ul class="feat-list" id="featList">${(p.features || []).map(featHTML).join("")}</ul>
-            <button class="add-row" data-add="feature">+ Tambah fitur</button>
+            <ul class="feat-list">${(p.features || []).map((f) => `<li><span class="fk">✓</span>${esc(f)}</li>`).join("")}</ul>
             <a href="index.html#contact" class="btn btn-primary btn-full">Diskusikan Proyek Serupa</a>
           </aside>
-        </div>
-      `;
-    }
+        </div>`;
+    })();
 
-    /* ---------- Lightbox ---------- */
+    // Lightbox
     const lightbox = document.getElementById("lightbox");
     const lbImg = document.getElementById("lbImg");
-    function openLightbox(src, alt) {
-      lbImg.src = src; lbImg.alt = alt || "";
-      lightbox.classList.add("open");
-      lightbox.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-    }
-    function closeLightbox() {
-      lightbox.classList.remove("open");
-      lightbox.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-    }
-    document.getElementById("lbClose").addEventListener("click", closeLightbox);
-    lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLightbox(); });
-
-    // Klik foto untuk memperbesar.
+    function closeLb() { lightbox.classList.remove("open"); lightbox.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; }
+    document.getElementById("lbClose").addEventListener("click", closeLb);
+    lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLb(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLb(); });
     root.addEventListener("click", (e) => {
       const img = e.target.closest("img.zoomable");
-      if (img) openLightbox(img.src, img.alt);
+      if (img) { lbImg.src = img.src; lbImg.alt = img.alt; lightbox.classList.add("open"); lightbox.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; }
     });
   </script>
 </body>
 </html>
-
-
