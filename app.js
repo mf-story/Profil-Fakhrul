@@ -91,18 +91,20 @@ function render() {
     gSec.style.display = "";
   } else { gSec.style.display = "none"; }
 
-  // Video (tampil bila ada file video unggahan atau tautan YouTube)
+  // Video: dukung file unggahan/URL video langsung ATAU tautan YouTube (di kolom mana pun).
   const v = c.video || {};
   const vSec = document.getElementById("video");
-  const vid = ytId(v.youtube);
-  if (v.file || vid) {
+  const ytFromFile = ytId(v.file);
+  const ytid = ytId(v.youtube) || ytFromFile;
+  const fileVideo = v.file && !ytFromFile ? v.file : ""; // file yang benar-benar video (bukan link YouTube)
+  if (fileVideo || ytid) {
     document.getElementById("videoHead").innerHTML = headHTML(v);
-    if (v.file) {
+    if (fileVideo) {
       const poster = v.bgImage ? ` poster="${esc(v.bgImage)}"` : "";
-      document.getElementById("video-frame").innerHTML = `<div class="vwrap"><video controls preload="metadata"${poster} src="${esc(v.file)}"></video></div>`;
+      document.getElementById("video-frame").innerHTML = `<div class="vwrap"><video controls playsinline preload="metadata"${poster} src="${esc(fileVideo)}"></video></div>`;
     } else {
-      const thumb = v.bgImage || `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
-      document.getElementById("video-frame").innerHTML = `<div class="vwrap" style="background-image:linear-gradient(rgba(8,14,26,.4),rgba(8,14,26,.55)),url('${esc(thumb)}')"><button class="vplay" data-yt="${vid}" aria-label="Putar video">▶</button></div>`;
+      const thumb = v.bgImage || `https://img.youtube.com/vi/${ytid}/hqdefault.jpg`;
+      document.getElementById("video-frame").innerHTML = `<div class="vwrap" style="background-image:linear-gradient(rgba(8,14,26,.4),rgba(8,14,26,.55)),url('${esc(thumb)}')"><button class="vplay" data-yt="${ytid}" aria-label="Putar video">▶</button></div>`;
     }
     vSec.style.display = "";
   } else { vSec.style.display = "none"; }

@@ -188,15 +188,47 @@ const server = http.createServer(async (req, res) => {
   fs.stat(filePath, (err, st) => {
     if (err || !st.isFile()) { res.writeHead(404); return res.end("404 Not Found"); }
     const ext = path.extname(filePath).toLowerCase();
-    const headers = { "Content-Type": MIME[ext] || "application/octet-stream" };
-    // Nama berkas unggahan berupa hash (isi tak berubah) → cache lama & immutable
-    headers["Cache-Control"] = isUpload
-      ? "public, max-age=31536000, immutable"
-      : "public, max-age=3600";
-    const etag = '"' + st.size.toString(16) + "-" + st.mtimeMs.toString(16) + '"';
-    headers["ETag"] = etag;
-    if (req.headers["if-none-match"] === etag) { res.writeHead(304, headers); return res.end(); }
-    res.writeHead(200, headers);
+    const type = MIME[ext] || "application/octet-stream";
+    const cache = isUpload ? "public, max-age=31536000, immutable" : "public, max-age=3600";
+    const etag = '"' + st.size.toString(16) + "-" + Math.round(st.mtimeMs).toString(16) + '"';
+    if (req.headers["if-none-match"] === etag) { res.writeHead(304, { ETag: etag, "Cache-Control": cache }); return res.end(); }
+
+    // Dukungan HTTP Range (wajib agar <video>/<audio> bisa diputar & di-seek)
+    const range = req.headers.range;
+    if (range) {
+      const m = /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+      if (m && (m[1] !== "" || m[2] !== "")) {
+        let start, end;
+        if (m[1] === "") { // bytes=-N (N byte terakhir)
+          const n = parseInt(m[2], 10);
+          start = Math.max(0, st.size - n); end = st.size - 1;
+        } else {
+          start = parseInt(m[1], 10);
+          end = m[2] === "" ? st.size - 1 : Math.min(parseInt(m[2], 10), st.size - 1);
+        }
+        if (isNaN(start) || isNaN(end) || start > end || start >= st.size) {
+          res.writeHead(416, { "Content-Range": `bytes */${st.size}`, "Accept-Ranges": "bytes" });
+          return res.end();
+        }
+        res.writeHead(206, {
+          "Content-Type": type,
+          "Content-Range": `bytes ${start}-${end}/${st.size}`,
+          "Accept-Ranges": "bytes",
+          "Content-Length": end - start + 1,
+          "Cache-Control": cache,
+          "ETag": etag,
+        });
+        return fs.createReadStream(filePath, { start, end }).pipe(res);
+      }
+    }
+
+    res.writeHead(200, {
+      "Content-Type": type,
+      "Content-Length": st.size,
+      "Accept-Ranges": "bytes",
+      "Cache-Control": cache,
+      "ETag": etag,
+    });
     fs.createReadStream(filePath).pipe(res);
   });
 });
