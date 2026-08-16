@@ -98,6 +98,7 @@ const PANELS = {
     const h = state.site.hero;
     return `<h2 class="cms-title">Hero (bagian atas)</h2>
       ${fld("Eyebrow (teks kecil di atas judul)", "site.hero.eyebrow", h.eyebrow)}
+      <label class="fld"><span>Foto latar hero (opsional) — tampilan bergaya korporat</span><div class="img-field"><div class="img-prev" id="heroBgPrev">${h.bgImage ? `<img src="${esc(h.bgImage)}">` : ""}</div><div class="img-ctrl"><input type="file" id="heroBgFile" accept="image/*" /><input type="text" data-bind="site.hero.bgImage" value="${esc(h.bgImage || "")}" placeholder="path/URL foto (kosongkan untuk gaya gradasi)" /></div></div></label>
       ${richField("Judul besar", "site.hero.titleHtml", h.titleHtml)}
       ${richField("Sub-judul", "site.hero.subtitleHtml", h.subtitleHtml)}
       <div class="fgrid">${fld("Teks tombol utama", "site.hero.btnPrimary", h.btnPrimary)}${fld("Teks tombol kedua", "site.hero.btnSecondary", h.btnSecondary)}</div>`;
@@ -175,6 +176,10 @@ const projRow = (id, i, n) => { const p = state.projects[id] || {}; return `<div
 
 /* ---------------- After-render (lists, uploads, buttons) ---------------- */
 const AFTER = {
+  hero(panel) {
+    const f = $("#heroBgFile", panel);
+    if (f) f.onchange = async (e) => { if (e.target.files[0]) { try { const url = await uploadFile(e.target.files[0]); state.site.hero.bgImage = url; switchPanel("hero"); toast("Foto latar diunggah."); } catch { toast("Gagal unggah", false); } } };
+  },
   services(panel) {
     $("#addSvc", panel).onclick = () => { state.site.services.items.push({ icon: "", title: "Keahlian baru", desc: "", cat: "web", wide: false }); switchPanel("services"); };
     panel.querySelectorAll("[data-del-svc]").forEach((b) => (b.onclick = () => { state.site.services.items.splice(+b.dataset.delSvc, 1); switchPanel("services"); }));

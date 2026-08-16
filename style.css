@@ -479,3 +479,32 @@ body.editing .row-del { display: inline-grid; place-items: center; }
 .rt-edit em { font-style: italic; color: var(--brand-2); }
 .rt-edit strong, .rt-edit b { font-weight: 700; }
 .erow .rt { flex: 1; }
+
+/* ===== Gaya korporat (referensi contoh-web-profile) ===== */
+.hero-bg { background-size: cover; background-position: center; background-repeat: no-repeat; }
+.hero.has-photo { min-height: 90vh; }
+.hero.has-photo .eyebrow, .hero.has-photo .hero-sub { color: rgba(255,255,255,.9); }
+.hero.has-photo .hero-title { color: #fff; text-transform: uppercase; font-family: "Manrope", sans-serif; font-weight: 800; letter-spacing: .5px; line-height: 1.08; }
+.hero.has-photo .hero-title em { color: var(--brand-1); font-style: normal; }
+.hero.has-photo .hero-sub strong { color: #fff; }
+.hero.has-photo .btn-outline { color: #fff; border-color: rgba(255,255,255,.55); }
+.hero.has-photo .btn-outline:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,.12); }
+.hero.has-photo .scroll-cue { color: rgba(255,255,255,.85); }
+.hero.has-photo .scroll-cue span { border-color: rgba(255,255,255,.45); }
+
+/* Heading bagian rata tengah (gaya korporat) */
+.head { text-align: center; margin-left: auto; margin-right: auto; }
+.head .kicker { justify-content: center; }
+
+/* Kartu keahlian rata tengah dengan ikon di atas */
+.svc { text-align: center; align-items: center; }
+.svc-ico { margin-left: auto; margin-right: auto; }
+.svc-wide { text-align: left; }
+.svc-wide .svc-ico { margin: 0; }
+
+/* Navbar terbaca di atas hero berfoto (sebelum di-scroll) */
+body.photo-hero .nav:not(.scrolled) .nav-links a:not(.nav-cta),
+body.photo-hero .nav:not(.scrolled) .logo-text { color: #fff; }
+body.photo-hero .nav:not(.scrolled) .nav-links a:not(.nav-cta):hover { color: var(--brand-1); }
+body.photo-hero .nav:not(.scrolled) .nav-cta { color: #fff !important; border-color: rgba(255,255,255,.55); }
+body.photo-hero .nav:not(.scrolled) .nav-toggle span { background: #fff; }
