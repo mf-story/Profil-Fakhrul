@@ -296,13 +296,21 @@ img.logo-mark { object-fit: cover; background: #eef1f4; }
     background: var(--bg-2); border-left: 1px solid var(--border); transform: translateX(100%); transition: transform .35s ease;
   }
   .nav-links.open { transform: translateX(0); }
+  .hero { min-height: auto; padding: 104px 0 52px; }
+  .hero-sub { font-size: 1rem; margin-bottom: 26px; }
+  .hero-actions { width: 100%; gap: 12px; }
+  .hero-actions .btn { flex: 1 1 100%; padding: 15px 24px; }
   .hero-stats { gap: 32px; }
   .stat b { font-size: 2.1rem; }
+  .scroll-cue { display: none; }
+  .section { padding: 52px 0; }
 }
 @media (max-width: 520px) {
   .services, .cats, .edu-grid { grid-template-columns: 1fr; }
   .svc-wide { grid-column: span 1; }
   .tl-item { grid-template-columns: 1fr; gap: 8px; }
+  .hero-title { font-size: clamp(2.2rem, 9vw, 3rem); }
+  .hero-stats { gap: 24px; width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .reveal { transition: none; opacity: 1; transform: none; } .scroll-cue span::after { animation: none; } }
 
