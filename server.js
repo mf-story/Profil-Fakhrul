@@ -207,7 +207,8 @@ const server = http.createServer(async (req, res) => {
     if (err || !st.isFile()) { res.writeHead(404); return res.end("404 Not Found"); }
     const ext = path.extname(filePath).toLowerCase();
     const type = MIME[ext] || "application/octet-stream";
-    const cache = isUpload ? "public, max-age=31536000, immutable" : "public, max-age=3600";
+    // Unggahan (nama hash) boleh cache lama; file aplikasi WAJIB revalidasi tiap muat (no-cache) agar perubahan langsung terlihat setelah deploy.
+    const cache = isUpload ? "public, max-age=31536000, immutable" : "no-cache";
     const etag = '"' + st.size.toString(16) + "-" + Math.round(st.mtimeMs).toString(16) + '"';
     if (req.headers["if-none-match"] === etag) { res.writeHead(304, { ETag: etag, "Cache-Control": cache }); return res.end(); }
 
