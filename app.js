@@ -16,6 +16,7 @@ const placeholders = {
   ],
 };
 const catTitles = { web: "Web dan Aplikasi", edukasi: "Edukasi", foto: "Fotografi", video: "Video dan Drone" };
+const DEFAULT_CAT_G = "linear-gradient(135deg,#3b82f6,#1d4ed8)";
 
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function ytId(u) { if (!u) return ""; u = String(u).trim(); if (/^[\w-]{11}$/.test(u)) return u; const m = u.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : ""; }
@@ -29,7 +30,12 @@ function projectItems(cat) {
       return { id, img: p.cover, g: p.g, tag: p.tag, name: p.name, desc: p.summary };
     });
 }
-function itemsForCat(cat) { return projectItems(cat).concat(placeholders[cat] || []); }
+function itemsForCat(cat) {
+  // Item kategori bisa diedit dari admin (site.categoryItems); jika belum ada, pakai placeholder bawaan.
+  const ci = CONTENT.site && CONTENT.site.categoryItems;
+  const extra = (ci ? (ci[cat] || []) : (placeholders[cat] || [])).map((x) => ({ ...x, g: x.g || DEFAULT_CAT_G }));
+  return projectItems(cat).concat(extra);
+}
 
 function headHTML(h) {
   return `<span class="kicker">${h.kicker || ""}</span><h2>${h.titleHtml || ""}</h2>${h.lead ? `<p class="lead">${h.lead}</p>` : ""}`;

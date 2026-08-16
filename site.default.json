@@ -26,6 +26,21 @@
     "lead": "Beberapa tangkapan hasil kerja dari berbagai bidang.",
     "items": []
   },
+  "categoryItems": {
+    "edukasi": [
+      { "ico": "🎮", "tag": "Serious Game Edukasi", "name": "Metabolic Heroes", "desc": "Game edukasi gaya hidup sehat dengan kesulitan adaptif." },
+      { "ico": "📚", "tag": "Media Ajar", "name": "Modul dan Media Pembelajaran Interaktif", "desc": "Materi dan media pembelajaran yang menarik dan mudah dipahami." }
+    ],
+    "foto": [
+      { "ico": "📷", "tag": "Fotografi", "name": "Sesi Potret dan Human Interest", "desc": "Pemotretan potret dan momen manusia dengan komposisi kuat." },
+      { "ico": "🌄", "tag": "Fotografi", "name": "Lanskap dan Perjalanan", "desc": "Dokumentasi keindahan alam dan perjalanan." }
+    ],
+    "video": [
+      { "ico": "🎬", "tag": "Videografi", "name": "Film Dokumenter Pendek", "desc": "Produksi video sinematik yang menceritakan sebuah kisah." },
+      { "ico": "🚁", "tag": "Aerial / Drone", "name": "Footage Udara Sinematik", "desc": "Pengambilan gambar udara dramatis menggunakan drone." }
+    ],
+    "web": []
+  },
   "video": {
     "kicker": "Cara Kerja",
     "titleHtml": "Bagaimana saya <em>menciptakan karya</em>",
