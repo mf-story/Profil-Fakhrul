@@ -152,11 +152,12 @@ const PANELS = {
       <button class="add-row" id="addGal">+ Tambah foto</button>`;
   },
   video() {
-    const v = state.site.video || (state.site.video = { kicker: "Cara Kerja", titleHtml: "", lead: "", youtube: "", bgImage: "" });
+    const v = state.site.video || (state.site.video = { kicker: "Cara Kerja", titleHtml: "", lead: "", youtube: "", bgImage: "", file: "" });
     return `<h2 class="cms-title">Video</h2>${head("site.video", v)}
-      <p class="muted" style="margin:-6px 0 12px">Bagian ini tampil hanya jika tautan YouTube diisi.</p>
-      ${fld("Tautan / ID YouTube", "site.video.youtube", v.youtube)}
-      <label class="fld"><span>Gambar sampul (opsional, default thumbnail YouTube)</span><div class="img-field"><div class="img-prev" id="vidPrev">${v.bgImage ? `<img src="${esc(v.bgImage)}">` : ""}</div><div class="img-ctrl"><input type="file" id="vidFile" accept="image/*" /><input type="text" data-bind="site.video.bgImage" value="${esc(v.bgImage || "")}" placeholder="path/URL gambar" /></div></div></label>`;
+      <p class="muted" style="margin:-6px 0 12px">Bagian ini tampil jika ada video unggahan atau tautan YouTube. Video unggahan diprioritaskan.</p>
+      <label class="fld"><span>Unggah video (mp4/webm) — opsional</span><div class="img-field"><div class="img-prev" id="vidVideoPrev">${v.file ? `<video src="${esc(v.file)}" muted></video>` : ""}</div><div class="img-ctrl"><input type="file" id="vidVideoFile" accept="video/*" /><input type="text" data-bind="site.video.file" value="${esc(v.file || "")}" placeholder="path/URL video (kosongkan untuk pakai YouTube)" /></div></div></label>
+      ${fld("Tautan / ID YouTube (dipakai jika tak ada video unggahan)", "site.video.youtube", v.youtube)}
+      <label class="fld"><span>Gambar sampul / poster (opsional)</span><div class="img-field"><div class="img-prev" id="vidPrev">${v.bgImage ? `<img src="${esc(v.bgImage)}">` : ""}</div><div class="img-ctrl"><input type="file" id="vidFile" accept="image/*" /><input type="text" data-bind="site.video.bgImage" value="${esc(v.bgImage || "")}" placeholder="path/URL gambar" /></div></div></label>`;
   },
   experience() {
     const x = state.site.experience;
@@ -187,9 +188,13 @@ const PANELS = {
   },
   projects() {
     const ids = state.projectsOrder || [];
+    const cats = ["web", "edukasi", "foto", "video"];
+    const byCat = {}; cats.forEach((c) => (byCat[c] = []));
+    ids.forEach((id) => { const p = state.projects[id]; if (!p) return; const c = cats.includes(p.cat) ? p.cat : "web"; byCat[c].push(id); });
     return `<h2 class="cms-title">Proyek</h2>
-      <button class="eb-btn primary" id="addProj" style="margin-bottom:14px">➕ Tambah Proyek</button>
-      <div class="admin-list" id="projList">${ids.map((id, i) => projRow(id, i, ids.length)).join("")}</div>`;
+      <p class="muted" style="margin:-6px 0 14px">Proyek dikelompokkan per kategori. Klik <b>+ Tambah</b> pada kategori untuk menambah proyek di kategori itu.</p>
+      ${cats.map((c) => `<div class="cms-group"><div class="cms-group-top"><h3 class="cms-sub" style="margin:0">${catLabel[c]}</h3><button class="add-row" data-add-proj="${c}" style="margin:0">+ Tambah</button></div>
+        <div class="admin-list">${byCat[c].length ? byCat[c].map((id) => projRow(id)).join("") : `<p class="muted" style="padding:6px 2px">Belum ada proyek di kategori ini.</p>`}</div></div>`).join("")}`;
   },
   settings() {
     return `<h2 class="cms-title">Pengaturan</h2>
@@ -214,10 +219,10 @@ const catItemRow = (cat, it, i) => `<div class="cms-card"><div class="cms-card-t
 const expRow = (it, i) => `<div class="cms-card"><div class="cms-card-top"><b>Pengalaman ${i + 1}</b><button class="row-del" data-del-exp="${i}" style="display:inline-grid">×</button></div>
   <div class="fgrid">${fld("Tahun", `site.experience.items.${i}.year`, it.year)}${fld("Jabatan / judul", `site.experience.items.${i}.title`, it.title)}</div>
   ${fld("Organisasi", `site.experience.items.${i}.org`, it.org)}${area("Keterangan", `site.experience.items.${i}.desc`, it.desc, 2)}</div>`;
-const projRow = (id, i, n) => { const p = state.projects[id] || {}; return `<div class="admin-row" data-id="${id}">
+const projRow = (id) => { const p = state.projects[id] || {}; return `<div class="admin-row" data-id="${id}">
   <div class="ar-cover">${p.cover ? `<img src="${esc(p.cover)}">` : "📁"}</div>
-  <div class="ar-info"><h3>${esc(p.name || "(tanpa nama)")}</h3><span class="ar-tag">${esc(p.tag || "")}</span><span class="ar-cat">${catLabel[p.cat] || p.cat || "web"}</span></div>
-  <div class="ar-actions"><button class="eb-btn" data-move="up" ${i === 0 ? "disabled" : ""}>↑</button><button class="eb-btn" data-move="down" ${i === n - 1 ? "disabled" : ""}>↓</button><button class="eb-btn" data-edit>✏️</button><button class="eb-btn danger" data-del>🗑️</button></div></div>`; };
+  <div class="ar-info"><h3>${esc(p.name || "(tanpa nama)")}</h3><span class="ar-tag">${esc(p.tag || "")}</span></div>
+  <div class="ar-actions"><button class="eb-btn" data-edit>✏️ Edit</button><button class="eb-btn danger" data-del>🗑️</button></div></div>`; };
 
 /* ---------------- After-render (lists, uploads, buttons) ---------------- */
 const AFTER = {
@@ -252,6 +257,8 @@ const AFTER = {
   video(panel) {
     const f = $("#vidFile", panel);
     if (f) f.onchange = async (e) => { if (e.target.files[0]) { try { const url = await uploadFile(e.target.files[0]); state.site.video.bgImage = url; switchPanel("video"); toast("Gambar diunggah."); } catch { toast("Gagal unggah", false); } } };
+    const vf = $("#vidVideoFile", panel);
+    if (vf) vf.onchange = async (e) => { if (e.target.files[0]) { try { toast("Mengunggah video…"); const url = await uploadFile(e.target.files[0]); state.site.video.file = url; switchPanel("video"); toast("Video diunggah."); } catch { toast("Gagal unggah (ukuran video terlalu besar?)", false); } } };
   },
   experience(panel) {
     $("#addExp", panel).onclick = () => { state.site.experience.items.push({ year: "", title: "Pengalaman baru", org: "", desc: "" }); switchPanel("experience"); };
@@ -269,13 +276,11 @@ const AFTER = {
     panel.querySelectorAll("[data-del-soc]").forEach((b) => (b.onclick = () => { state.site.contact.socials.splice(+b.dataset.delSoc, 1); switchPanel("contact"); }));
   },
   projects(panel) {
-    $("#addProj", panel).onclick = () => openProj(null);
-    $("#projList", panel).addEventListener("click", (e) => {
-      const row = e.target.closest(".admin-row"); if (!row) return; const id = row.dataset.id;
-      if (e.target.closest("[data-edit]")) openProj(id);
-      else if (e.target.closest("[data-del]")) { if (confirm("Hapus proyek ini?")) { delete state.projects[id]; state.projectsOrder = state.projectsOrder.filter((x) => x !== id); switchPanel("projects"); } }
-      else if (e.target.closest('[data-move="up"]')) moveProj(id, -1);
-      else if (e.target.closest('[data-move="down"]')) moveProj(id, 1);
+    panel.querySelectorAll("[data-add-proj]").forEach((b) => (b.onclick = () => openProj(null, b.dataset.addProj)));
+    panel.querySelectorAll(".admin-row").forEach((row) => {
+      const id = row.dataset.id;
+      row.querySelector("[data-edit]").onclick = () => openProj(id);
+      row.querySelector("[data-del]").onclick = () => { if (confirm("Hapus proyek ini?")) { delete state.projects[id]; state.projectsOrder = state.projectsOrder.filter((x) => x !== id); switchPanel("projects"); } };
     });
   },
   settings(panel) {
@@ -292,11 +297,6 @@ const AFTER = {
     };
   },
 };
-function moveProj(id, dir) {
-  const arr = state.projectsOrder; const i = arr.indexOf(id); const j = i + dir;
-  if (i < 0 || j < 0 || j >= arr.length) return;
-  arr.splice(j, 0, arr.splice(i, 1)[0]); switchPanel("projects");
-}
 
 /* ---------------- Editor proyek ---------------- */
 const projEditor = $("#projEditor");
@@ -310,12 +310,12 @@ function addShotRow(shot) {
   row.querySelector(".row-del").onclick = () => row.remove();
   shotsEditor.appendChild(row);
 }
-function openProj(id) {
+function openProj(id, presetCat) {
   const p = id ? state.projects[id] : null;
   $("#projEditorTitle").textContent = id ? "Edit Proyek" : "Tambah Proyek";
   $("#pf_id").value = id || "";
   $("#pf_name").value = p ? p.name || "" : "";
-  $("#pf_cat").value = p ? p.cat || "web" : "web";
+  $("#pf_cat").value = p ? p.cat || "web" : (presetCat || "web");
   $("#pf_tag").value = p ? p.tag || "" : "";
   $("#pf_year").value = p ? p.year || "" : "";
   $("#pf_role").value = p ? p.role || "" : "";

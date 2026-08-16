@@ -100,6 +100,7 @@ const MIME = {
   ".js": "application/javascript; charset=utf-8", ".json": "application/json; charset=utf-8",
   ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif",
   ".webp": "image/webp", ".svg": "image/svg+xml", ".ico": "image/x-icon",
+  ".mp4": "video/mp4", ".webm": "video/webm", ".mov": "video/quicktime", ".m4v": "video/x-m4v",
   ".woff2": "font/woff2", ".webmanifest": "application/manifest+json",
 };
 function sendJson(res, code, obj, extraHeaders) {
@@ -151,10 +152,10 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, { ok: true });
       }
       if (p === "/api/upload" && req.method === "POST") {
-        const body = JSON.parse(await readBody(req));
-        const m = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(body.dataUrl || "");
-        if (!m) return sendJson(res, 400, { error: "Bukan gambar valid" });
-        const ext = ({ "image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "image/gif": ".gif", "image/svg+xml": ".svg" })[m[1]] || ".png";
+        const body = JSON.parse(await readBody(req, 64 * 1024 * 1024));
+        const m = /^data:((?:image|video)\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(body.dataUrl || "");
+        if (!m) return sendJson(res, 400, { error: "Berkas tidak valid" });
+        const ext = ({ "image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "image/gif": ".gif", "image/svg+xml": ".svg", "video/mp4": ".mp4", "video/webm": ".webm", "video/quicktime": ".mov", "video/x-m4v": ".m4v" })[m[1]] || ".bin";
         const name = crypto.randomBytes(8).toString("hex") + ext;
         fs.writeFileSync(path.join(UPLOAD_DIR, name), Buffer.from(m[2], "base64"));
         return sendJson(res, 200, { url: "/uploads/" + name });

@@ -67,17 +67,22 @@
           <label class="fld"><span>Nama *</span><input type="text" id="pf_name" required /></label>
           <label class="fld"><span>Kategori</span><select id="pf_cat"><option value="web">Web dan Aplikasi</option><option value="edukasi">Edukasi</option><option value="foto">Fotografi</option><option value="video">Video dan Drone</option></select></label>
           <label class="fld"><span>Tag</span><input type="text" id="pf_tag" /></label>
-          <label class="fld"><span>Tahun</span><input type="text" id="pf_year" /></label>
-          <label class="fld fld-2"><span>Peran</span><input type="text" id="pf_role" /></label>
         </div>
         <label class="fld"><span>Foto sampul</span>
           <div class="img-field"><div class="img-prev" id="pf_coverPrev"></div><div class="img-ctrl"><input type="file" id="pf_coverFile" accept="image/*" /><input type="text" id="pf_cover" placeholder="path/URL gambar" /></div></div>
         </label>
         <label class="fld"><span>Ringkasan</span><textarea id="pf_summary" rows="2"></textarea></label>
-        <label class="fld"><span>Teknologi (pisah koma)</span><input type="text" id="pf_tech" /></label>
-        <label class="fld"><span>Deskripsi (satu paragraf per baris)</span><textarea id="pf_desc" rows="4"></textarea></label>
-        <label class="fld"><span>Fitur (satu per baris)</span><textarea id="pf_features" rows="4"></textarea></label>
-        <div class="fld"><span>Tangkapan layar</span><div class="shots-editor" id="pf_shots"></div><button type="button" class="add-row" id="pf_addShot" style="display:inline-block">+ Tambah foto</button></div>
+        <details class="adv">
+          <summary>Detail lanjutan (opsional) — untuk halaman detail proyek</summary>
+          <div class="fgrid">
+            <label class="fld"><span>Tahun</span><input type="text" id="pf_year" /></label>
+            <label class="fld"><span>Peran</span><input type="text" id="pf_role" /></label>
+          </div>
+          <label class="fld"><span>Teknologi (pisah koma)</span><input type="text" id="pf_tech" /></label>
+          <label class="fld"><span>Deskripsi (satu paragraf per baris)</span><textarea id="pf_desc" rows="4"></textarea></label>
+          <label class="fld"><span>Fitur (satu per baris)</span><textarea id="pf_features" rows="4"></textarea></label>
+          <div class="fld"><span>Tangkapan layar</span><div class="shots-editor" id="pf_shots"></div><button type="button" class="add-row" id="pf_addShot" style="display:inline-block">+ Tambah foto</button></div>
+        </details>
         <div class="editor-foot"><button type="submit" class="btn btn-primary">💾 Simpan Proyek</button><button type="button" class="btn btn-outline" data-pclose>Batal</button></div>
       </form>
     </div>
