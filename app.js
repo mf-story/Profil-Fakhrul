@@ -68,7 +68,7 @@ function render() {
       <div class="svc-ico"><svg viewBox="0 0 24 24">${s.icon || ""}</svg></div>
       <h3>${esc(s.title)}</h3>
       <p>${esc(s.desc)}</p>
-      <span class="svc-more">Lihat karya →</span>
+      <span class="svc-more">Lihat portofolio →</span>
     </article>`).join("");
 
   // Pendidikan
