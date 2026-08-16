@@ -1,22 +1,7 @@
 // Frontend profil — mengambil konten dari server (/api/content) lalu merender semua bagian.
 let CONTENT = null;
 
-const placeholders = {
-  edukasi: [
-    { ico: "🎮", g: "linear-gradient(135deg,#15803d,#0b3b2c)", tag: "Serious Game Edukasi", name: "Metabolic Heroes", desc: "Game edukasi gaya hidup sehat dengan kesulitan adaptif." },
-    { ico: "📚", g: "linear-gradient(135deg,#166534,#123524)", tag: "Media Ajar", name: "Modul dan Media Pembelajaran Interaktif", desc: "Materi dan media pembelajaran yang menarik dan mudah dipahami." },
-  ],
-  foto: [
-    { ico: "📷", g: "linear-gradient(135deg,#0f8f4e,#134e2b)", tag: "Fotografi", name: "Sesi Potret dan Human Interest", desc: "Pemotretan potret dan momen manusia dengan komposisi kuat." },
-    { ico: "🌄", g: "linear-gradient(135deg,#166534,#0b3b2c)", tag: "Fotografi", name: "Lanskap dan Perjalanan", desc: "Dokumentasi keindahan alam dan perjalanan." },
-  ],
-  video: [
-    { ico: "🎬", g: "linear-gradient(135deg,#065f46,#0b3b2c)", tag: "Videografi", name: "Film Dokumenter Pendek", desc: "Produksi video sinematik yang menceritakan sebuah kisah." },
-    { ico: "🚁", g: "linear-gradient(135deg,#10b981,#0a3d2c)", tag: "Aerial / Drone", name: "Footage Udara Sinematik", desc: "Pengambilan gambar udara dramatis menggunakan drone." },
-  ],
-};
 const catTitles = { web: "Web dan Aplikasi", edukasi: "Edukasi", foto: "Fotografi", video: "Video dan Drone" };
-const DEFAULT_CAT_G = "linear-gradient(135deg,#3b82f6,#1d4ed8)";
 
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function ytId(u) { if (!u) return ""; u = String(u).trim(); if (/^[\w-]{11}$/.test(u)) return u; const m = u.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : ""; }
@@ -31,10 +16,7 @@ function projectItems(cat) {
     });
 }
 function itemsForCat(cat) {
-  // Item kategori bisa diedit dari admin (site.categoryItems); jika belum ada, pakai placeholder bawaan.
-  const ci = CONTENT.site && CONTENT.site.categoryItems;
-  const extra = (ci ? (ci[cat] || []) : (placeholders[cat] || [])).map((x) => ({ ...x, g: x.g || DEFAULT_CAT_G }));
-  return projectItems(cat).concat(extra);
+  return projectItems(cat);
 }
 
 function headHTML(h) {
@@ -162,7 +144,7 @@ function initInteractions() {
 
   // Kartu keahlian -> modal
   const grid = document.getElementById("services-grid");
-  const open = (card) => { if (card && card.dataset.cat) openCategory(card.dataset.cat); };
+  const open = (card) => { if (card && card.dataset.cat) openCategory(card.dataset.cat, card.querySelector("h3") ? card.querySelector("h3").textContent : ""); };
   grid.addEventListener("click", (e) => open(e.target.closest(".svc")));
   grid.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(e.target.closest(".svc")); } });
 
@@ -193,17 +175,17 @@ function initInteractions() {
 }
 
 /* ---------------- Modal ---------------- */
-function openCategory(key) {
+function openCategory(key, title) {
   const items = itemsForCat(key);
-  document.getElementById("modalTitle").textContent = catTitles[key] || "Karya";
-  document.getElementById("modalList").innerHTML = items.map((it) => {
+  document.getElementById("modalTitle").textContent = title || catTitles[key] || "Karya";
+  document.getElementById("modalList").innerHTML = items.length ? items.map((it) => {
     const inner = `
       <span class="mw-ico" style="--g:${it.g}">${it.img ? `<img src="${esc(it.img)}" alt="${esc(it.name)}" loading="lazy">` : it.ico}</span>
       <div><span class="mw-tag">${esc(it.tag)}</span><h5>${esc(it.name)}</h5><p>${esc(it.desc)}</p></div>`;
     return it.id
       ? `<a class="modal-work is-link" href="proyek.html?id=${encodeURIComponent(it.id)}&cat=${encodeURIComponent(key)}">${inner}<span class="mw-go">→</span></a>`
       : `<div class="modal-work">${inner}</div>`;
-  }).join("");
+  }).join("") : `<p class="modal-empty">Belum ada proyek di kategori ini.</p>`;
   const modal = document.getElementById("workModal");
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");

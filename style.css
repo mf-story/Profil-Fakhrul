@@ -190,6 +190,7 @@ img.logo-mark { object-fit: cover; background: #eef1f4; }
 .modal-close:hover { color: var(--ink); border-color: var(--brand-1); }
 .modal-title { font-size: 1.8rem; margin: 6px 0 22px; }
 .modal-list { display: grid; gap: 12px; }
+.modal-empty { color: var(--muted); text-align: center; padding: 24px 8px; }
 .modal-work { display: flex; gap: 16px; align-items: flex-start; padding: 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px; transition: border-color .2s, transform .2s; }
 .modal-work:hover { border-color: rgba(59, 130, 246,.4); transform: translateX(4px); }
 .modal-work.is-link { text-decoration: none; color: inherit; position: relative; }

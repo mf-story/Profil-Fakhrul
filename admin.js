@@ -5,22 +5,6 @@ let current = "hero";
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const catLabel = { web: "Web dan Aplikasi", edukasi: "Edukasi", foto: "Fotografi", video: "Video dan Drone" };
-// Isi bawaan popup kategori — dipakai untuk menyeed konten lama yang belum punya categoryItems.
-const DEFAULT_CATEGORY_ITEMS = {
-  edukasi: [
-    { ico: "🎮", tag: "Serious Game Edukasi", name: "Metabolic Heroes", desc: "Game edukasi gaya hidup sehat dengan kesulitan adaptif." },
-    { ico: "📚", tag: "Media Ajar", name: "Modul dan Media Pembelajaran Interaktif", desc: "Materi dan media pembelajaran yang menarik dan mudah dipahami." },
-  ],
-  foto: [
-    { ico: "📷", tag: "Fotografi", name: "Sesi Potret dan Human Interest", desc: "Pemotretan potret dan momen manusia dengan komposisi kuat." },
-    { ico: "🌄", tag: "Fotografi", name: "Lanskap dan Perjalanan", desc: "Dokumentasi keindahan alam dan perjalanan." },
-  ],
-  video: [
-    { ico: "🎬", tag: "Videografi", name: "Film Dokumenter Pendek", desc: "Produksi video sinematik yang menceritakan sebuah kisah." },
-    { ico: "🚁", tag: "Aerial / Drone", name: "Footage Udara Sinematik", desc: "Pengambilan gambar udara dramatis menggunakan drone." },
-  ],
-  web: [],
-};
 
 function getPath(o, p) { return p.split(".").reduce((a, k) => (a == null ? a : a[k]), o); }
 function setPath(o, p, v) {
@@ -126,16 +110,6 @@ const PANELS = {
       <div id="svcList">${(s.items || []).map((it, i) => svcRow(it, i)).join("")}</div>
       <button class="add-row" id="addSvc">+ Tambah keahlian</button>`;
   },
-  categories() {
-    if (!state.site.categoryItems) state.site.categoryItems = JSON.parse(JSON.stringify(DEFAULT_CATEGORY_ITEMS));
-    const ci = state.site.categoryItems;
-    const cats = ["edukasi", "foto", "video", "web"];
-    return `<h2 class="cms-title">Item Kategori (isi popup keahlian)</h2>
-      <p class="muted" style="margin:-6px 0 14px">Kartu contoh yang muncul saat kartu keahlian diklik. Untuk kartu yang bisa diklik ke halaman detail, gunakan menu <b>Proyek</b>.</p>
-      ${cats.map((cat) => `<div class="cms-group"><h3 class="cms-sub">${catLabel[cat]}</h3>
-        <div>${(ci[cat] || []).map((it, i) => catItemRow(cat, it, i)).join("")}</div>
-        <button class="add-row" data-add-cat="${cat}">+ Tambah item ${catLabel[cat]}</button></div>`).join("")}`;
-  },
   education() {
     const e = state.site.education;
     return `<h2 class="cms-title">Pendidikan</h2>${head("site.education", e)}
@@ -188,13 +162,18 @@ const PANELS = {
   },
   projects() {
     const ids = state.projectsOrder || [];
-    const cats = ["web", "edukasi", "foto", "video"];
-    const byCat = {}; cats.forEach((c) => (byCat[c] = []));
-    ids.forEach((id) => { const p = state.projects[id]; if (!p) return; const c = cats.includes(p.cat) ? p.cat : "web"; byCat[c].push(id); });
+    const svc = (state.site.services && state.site.services.items) || [];
+    const seen = new Set();
+    const groups = svc
+      .map((s) => ({ cat: s.cat || "web", label: s.title || "(keahlian)" }))
+      .filter((g) => (seen.has(g.cat) ? false : seen.add(g.cat)));
     return `<h2 class="cms-title">Proyek</h2>
-      <p class="muted" style="margin:-6px 0 14px">Proyek dikelompokkan per kategori. Klik <b>+ Tambah</b> pada kategori untuk menambah proyek di kategori itu.</p>
-      ${cats.map((c) => `<div class="cms-group"><div class="cms-group-top"><h3 class="cms-sub" style="margin:0">${catLabel[c]}</h3><button class="add-row" data-add-proj="${c}" style="margin:0">+ Tambah</button></div>
-        <div class="admin-list">${byCat[c].length ? byCat[c].map((id) => projRow(id)).join("") : `<p class="muted" style="padding:6px 2px">Belum ada proyek di kategori ini.</p>`}</div></div>`).join("")}`;
+      <p class="muted" style="margin:-6px 0 14px">Proyek dikelompokkan mengikuti <b>Keahlian</b>. Klik <b>+ Tambah</b> pada suatu keahlian; proyek akan tampil di kartu keahlian itu pada situs.</p>
+      ${groups.map((g) => {
+        const list = ids.filter((id) => state.projects[id] && (state.projects[id].cat || "web") === g.cat);
+        return `<div class="cms-group"><div class="cms-group-top"><h3 class="cms-sub" style="margin:0">${esc(g.label)}</h3><button class="add-row" data-add-proj="${esc(g.cat)}" style="margin:0">+ Tambah</button></div>
+          <div class="admin-list">${list.length ? list.map((id) => projRow(id)).join("") : `<p class="muted" style="padding:6px 2px">Belum ada proyek.</p>`}</div></div>`;
+      }).join("")}`;
   },
   settings() {
     return `<h2 class="cms-title">Pengaturan</h2>
@@ -213,9 +192,7 @@ const svcRow = (it, i) => `<div class="cms-card"><div class="cms-card-top"><b>Ke
 const eduRow = (it, i) => `<div class="cms-card"><div class="cms-card-top"><b>Pendidikan ${i + 1}</b><button class="row-del" data-del-edu="${i}" style="display:inline-grid">×</button></div>
   <div class="fgrid">${fld("Tahun", `site.education.items.${i}.date`, it.date)}${fld("Jenjang / judul", `site.education.items.${i}.title`, it.title)}</div>
   ${fld("Institusi", `site.education.items.${i}.org`, it.org)}${area("Keterangan", `site.education.items.${i}.desc`, it.desc, 2)}</div>`;
-const catItemRow = (cat, it, i) => `<div class="cms-card"><div class="cms-card-top"><b>Item ${i + 1}</b><button class="row-del" data-del-cat="${cat}:${i}" style="display:inline-grid">×</button></div>
-  <div class="fgrid">${fld("Ikon (emoji)", `site.categoryItems.${cat}.${i}.ico`, it.ico)}${fld("Label (tag)", `site.categoryItems.${cat}.${i}.tag`, it.tag)}</div>
-  ${fld("Judul", `site.categoryItems.${cat}.${i}.name`, it.name)}${area("Keterangan", `site.categoryItems.${cat}.${i}.desc`, it.desc, 2)}</div>`;
+const catItemRow = null;
 const expRow = (it, i) => `<div class="cms-card"><div class="cms-card-top"><b>Pengalaman ${i + 1}</b><button class="row-del" data-del-exp="${i}" style="display:inline-grid">×</button></div>
   <div class="fgrid">${fld("Tahun", `site.experience.items.${i}.year`, it.year)}${fld("Jabatan / judul", `site.experience.items.${i}.title`, it.title)}</div>
   ${fld("Organisasi", `site.experience.items.${i}.org`, it.org)}${area("Keterangan", `site.experience.items.${i}.desc`, it.desc, 2)}</div>`;
@@ -234,17 +211,7 @@ const AFTER = {
     $("#addSvc", panel).onclick = () => { state.site.services.items.push({ icon: "", title: "Keahlian baru", desc: "", cat: "web", wide: false }); switchPanel("services"); };
     panel.querySelectorAll("[data-del-svc]").forEach((b) => (b.onclick = () => { state.site.services.items.splice(+b.dataset.delSvc, 1); switchPanel("services"); }));
   },
-  categories(panel) {
-    panel.querySelectorAll("[data-add-cat]").forEach((b) => (b.onclick = () => {
-      const cat = b.dataset.addCat;
-      (state.site.categoryItems[cat] = state.site.categoryItems[cat] || []).push({ ico: "✨", tag: "", name: "Item baru", desc: "" });
-      switchPanel("categories");
-    }));
-    panel.querySelectorAll("[data-del-cat]").forEach((b) => (b.onclick = () => {
-      const [cat, i] = b.dataset.delCat.split(":");
-      state.site.categoryItems[cat].splice(+i, 1); switchPanel("categories");
-    }));
-  },
+  categories(panel) {},
   education(panel) {
     $("#addEdu", panel).onclick = () => { state.site.education.items.push({ date: "", title: "Pendidikan baru", org: "", desc: "" }); switchPanel("education"); };
     panel.querySelectorAll("[data-del-edu]").forEach((b) => (b.onclick = () => { state.site.education.items.splice(+b.dataset.delEdu, 1); switchPanel("education"); }));
@@ -315,6 +282,14 @@ function openProj(id, presetCat) {
   $("#projEditorTitle").textContent = id ? "Edit Proyek" : "Tambah Proyek";
   $("#pf_id").value = id || "";
   $("#pf_name").value = p ? p.name || "" : "";
+  // Opsi kategori mengikuti daftar keahlian (dedupe per kategori)
+  const svc = (state.site.services && state.site.services.items) || [];
+  const seen = new Set();
+  const opts = svc
+    .map((s) => ({ cat: s.cat || "web", label: s.title || (s.cat || "web") }))
+    .filter((o) => (seen.has(o.cat) ? false : seen.add(o.cat)))
+    .map((o) => `<option value="${esc(o.cat)}">${esc(o.label)}</option>`).join("");
+  $("#pf_cat").innerHTML = opts || `<option value="web">Web dan Aplikasi</option>`;
   $("#pf_cat").value = p ? p.cat || "web" : (presetCat || "web");
   $("#pf_tag").value = p ? p.tag || "" : "";
   $("#pf_year").value = p ? p.year || "" : "";
