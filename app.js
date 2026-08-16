@@ -52,7 +52,7 @@ function render() {
   const heroBg = heroSec.querySelector(".hero-bg");
   if (hero.bgImage) {
     heroSec.classList.add("has-photo");
-    heroBg.style.backgroundImage = `linear-gradient(rgba(8,20,14,.55), rgba(8,20,14,.72)), url("${hero.bgImage}")`;
+    heroBg.style.backgroundImage = `linear-gradient(rgba(8,14,26,.55), rgba(8,14,26,.72)), url("${hero.bgImage}")`;
     document.body.classList.add("photo-hero");
   } else {
     heroSec.classList.remove("has-photo");
