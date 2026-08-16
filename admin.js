@@ -43,6 +43,17 @@ async function loadAndStart() {
   $("#cmsNav").addEventListener("click", (e) => { const b = e.target.closest("button[data-panel]"); if (b) switchPanel(b.dataset.panel); });
   $("#btnSave").addEventListener("click", save);
   $("#btnLogout").addEventListener("click", async () => { await fetch("/api/logout", { method: "POST" }); location.reload(); });
+  // Toolbar editor teks (seperti Word)
+  $("#panel").addEventListener("click", (e) => {
+    const btn = e.target.closest(".rt-tools button"); if (!btn) return;
+    e.preventDefault();
+    const edit = btn.closest(".rt").querySelector(".rt-edit"); edit.focus();
+    const cmd = btn.dataset.cmd;
+    if (cmd === "bold") document.execCommand("bold", false);
+    else if (cmd === "em") wrapEm();
+    else if (cmd === "br") document.execCommand("insertHTML", false, "<br>");
+    setPath(state, edit.dataset.rich, edit.innerHTML);
+  });
   switchPanel("hero");
 }
 async function save() {
@@ -60,8 +71,9 @@ function switchPanel(name) {
   const panel = $("#panel");
   panel.innerHTML = PANELS[name] ? PANELS[name]() : "";
   panel.oninput = panel.onchange = (e) => {
-    const el = e.target; const p = el.dataset.bind; if (!p) return;
-    setPath(state, p, el.type === "checkbox" ? el.checked : el.value);
+    const el = e.target;
+    if (el.dataset && el.dataset.bind) { setPath(state, el.dataset.bind, el.type === "checkbox" ? el.checked : el.value); return; }
+    if (el.dataset && el.dataset.rich != null) { setPath(state, el.dataset.rich, el.innerHTML); }
   };
   if (AFTER[name]) AFTER[name](panel);
 }
@@ -70,7 +82,15 @@ function $$(s, r = document) { return [...r.querySelectorAll(s)]; }
 /* ---------------- Field helpers ---------------- */
 const fld = (label, path, val) => `<label class="fld"><span>${label}</span><input type="text" data-bind="${path}" value="${esc(val)}" /></label>`;
 const area = (label, path, val, rows = 3) => `<label class="fld"><span>${label}</span><textarea data-bind="${path}" rows="${rows}">${esc(val)}</textarea></label>`;
-const head = (basePath, h) => `<div class="fgrid">${fld("Label kecil (kicker)", basePath + ".kicker", h.kicker)}${fld("Judul (boleh &lt;em&gt;)", basePath + ".titleHtml", h.titleHtml)}</div>${h.lead !== undefined ? area("Teks pengantar (lead)", basePath + ".lead", h.lead, 2) : ""}`;
+const richBox = (path, html) => `<div class="rt"><div class="rt-tools"><button type="button" data-cmd="bold" title="Tebal"><b>B</b></button><button type="button" data-cmd="em" title="Sorot warna">✨</button><button type="button" data-cmd="br" title="Baris baru">↵</button></div><div class="rt-edit" contenteditable="true" data-rich="${path}">${html || ""}</div></div>`;
+const richField = (label, path, html) => `<div class="fld"><span>${label}</span>${richBox(path, html)}</div>`;
+const head = (basePath, h) => `${fld("Label kecil (kicker)", basePath + ".kicker", h.kicker)}${richField("Judul", basePath + ".titleHtml", h.titleHtml)}${h.lead !== undefined ? area("Teks pengantar (lead)", basePath + ".lead", h.lead, 2) : ""}`;
+function wrapEm() {
+  const sel = window.getSelection();
+  const safe = (t) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  if (!sel || !sel.rangeCount || sel.isCollapsed) { document.execCommand("insertHTML", false, "<em>teks</em>"); return; }
+  document.execCommand("insertHTML", false, "<em>" + safe(sel.toString()) + "</em>");
+}
 
 /* ---------------- Panels ---------------- */
 const PANELS = {
@@ -78,8 +98,8 @@ const PANELS = {
     const h = state.site.hero;
     return `<h2 class="cms-title">Hero (bagian atas)</h2>
       ${fld("Eyebrow (teks kecil di atas judul)", "site.hero.eyebrow", h.eyebrow)}
-      ${area("Judul besar (boleh &lt;br /&gt; dan &lt;em&gt;...&lt;/em&gt;)", "site.hero.titleHtml", h.titleHtml, 2)}
-      ${area("Sub-judul (boleh &lt;strong&gt;)", "site.hero.subtitleHtml", h.subtitleHtml, 3)}
+      ${richField("Judul besar", "site.hero.titleHtml", h.titleHtml)}
+      ${richField("Sub-judul", "site.hero.subtitleHtml", h.subtitleHtml)}
       <div class="fgrid">${fld("Teks tombol utama", "site.hero.btnPrimary", h.btnPrimary)}${fld("Teks tombol kedua", "site.hero.btnSecondary", h.btnSecondary)}</div>`;
   },
   services() {
@@ -104,10 +124,11 @@ const PANELS = {
   about() {
     const a = state.site.about;
     return `<h2 class="cms-title">Tentang Saya</h2>
-      <div class="fgrid">${fld("Label kecil", "site.about.kicker", a.kicker)}${fld("Judul (boleh &lt;em&gt;)", "site.about.titleHtml", a.titleHtml)}</div>
+      ${fld("Label kecil", "site.about.kicker", a.kicker)}
+      ${richField("Judul", "site.about.titleHtml", a.titleHtml)}
       <div class="fgrid">${fld("Inisial bingkai", "site.about.frameInitials", a.frameInitials)}${fld("Badge", "site.about.badge", a.badge)}</div>
       <label class="fld"><span>Foto (opsional, ganti inisial)</span><div class="img-field"><div class="img-prev" id="aboutPrev">${a.frameImage ? `<img src="${esc(a.frameImage)}">` : ""}</div><div class="img-ctrl"><input type="file" id="aboutFile" accept="image/*" /><input type="text" data-bind="site.about.frameImage" value="${esc(a.frameImage || "")}" placeholder="path/URL foto" /></div></div></label>
-      <h3 class="cms-sub">Paragraf</h3><div id="aboutParas">${(a.paragraphs || []).map((p, i) => `<div class="erow"><textarea data-bind="site.about.paragraphs.${i}" rows="3">${esc(p)}</textarea><button class="row-del" data-del-para="${i}">×</button></div>`).join("")}</div>
+      <h3 class="cms-sub">Paragraf</h3><div id="aboutParas">${(a.paragraphs || []).map((p, i) => `<div class="erow">${richBox("site.about.paragraphs." + i, p)}<button class="row-del" data-del-para="${i}">×</button></div>`).join("")}</div>
       <button class="add-row" id="addPara">+ Tambah paragraf</button>
       <h3 class="cms-sub">Poin (checklist)</h3><div id="aboutPoints">${(a.points || []).map((p, i) => `<div class="erow"><input type="text" data-bind="site.about.points.${i}" value="${esc(p)}" /><button class="row-del" data-del-point="${i}">×</button></div>`).join("")}</div>
       <button class="add-row" id="addPoint">+ Tambah poin</button>

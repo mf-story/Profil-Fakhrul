@@ -460,3 +460,22 @@ body.editing .row-del { display: inline-grid; place-items: center; }
   .cms-layout { grid-template-columns: 1fr; }
   .cms-nav { position: static; grid-auto-flow: column; overflow-x: auto; }
 }
+
+/* ===== Editor teks (rich) & rapikan form admin ===== */
+.cms-panel .fld { margin-bottom: 16px; }
+.cms-panel .fgrid { gap: 16px; margin-bottom: 4px; }
+.cms-panel input[type="text"], .cms-panel input[type="password"], .cms-panel textarea, .cms-panel select {
+  width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 10px;
+  font-family: inherit; font-size: .95rem; background: var(--bg-2); color: var(--ink); resize: vertical;
+}
+.cms-panel input:focus, .cms-panel textarea:focus, .cms-panel select:focus { outline: none; border-color: var(--brand-1); box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
+
+.rt { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg-2); }
+.rt-tools { display: flex; gap: 4px; padding: 6px; background: var(--panel-2); border-bottom: 1px solid var(--border); }
+.rt-tools button { width: 32px; height: 30px; border: 1px solid var(--border); background: var(--panel); border-radius: 7px; cursor: pointer; font-size: .9rem; color: var(--ink); display: grid; place-items: center; }
+.rt-tools button:hover { border-color: var(--brand-1); color: var(--brand-2); }
+.rt-edit { min-height: 46px; padding: 11px 13px; font-family: inherit; font-size: 1rem; line-height: 1.6; outline: none; }
+.rt-edit:focus { box-shadow: inset 0 0 0 2px rgba(34,197,94,.15); }
+.rt-edit em { font-style: italic; color: var(--brand-2); }
+.rt-edit strong, .rt-edit b { font-weight: 700; }
+.erow .rt { flex: 1; }
