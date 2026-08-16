@@ -243,6 +243,21 @@ function initGlobal() {
     // Jika datang dari daftar kategori (mis. kembali dari halaman detail), buka lagi daftarnya.
     const cat = new URLSearchParams(location.search).get("cat");
     if (cat && catTitles[cat]) { const s = document.getElementById("services"); if (s) s.scrollIntoView(); setTimeout(() => openCategory(cat), 250); }
+    else if (location.hash) {
+      // Konten dirender oleh JS; loncat andal ke bagian (mis. #contact). Paksa instan agar tak diblokir scroll-behavior:smooth.
+      const jump = () => {
+        const el = document.querySelector(location.hash);
+        if (!el) return;
+        const se = document.scrollingElement || document.documentElement;
+        const prev = se.style.scrollBehavior;
+        se.style.scrollBehavior = "auto";
+        se.scrollTop = el.getBoundingClientRect().top + se.scrollTop - 64;
+        se.style.scrollBehavior = prev;
+      };
+      setTimeout(jump, 80);
+      if (document.readyState !== "complete") window.addEventListener("load", () => setTimeout(jump, 100));
+      setTimeout(jump, 600);
+    }
   } catch (e) {
     document.getElementById("heroContent").innerHTML = '<p class="hero-sub">Gagal memuat konten. Jalankan lewat server (node server.js).</p>';
     console.error(e);
