@@ -105,8 +105,7 @@ function render() {
   const slider = document.getElementById("gallery-slider");
   if (gItems.length) {
     document.getElementById("gallery-track").innerHTML = gItems.map((it) => `
-      <figure class="slide"><img src="${esc(it.image)}" alt="${esc(it.caption || "")}" class="gzoom" loading="lazy" />${it.caption ? `<figcaption>${esc(it.caption)}</figcaption>` : ""}</figure>`).join("");
-    document.getElementById("gallery-dots").innerHTML = gItems.length > 1 ? gItems.map((_, i) => `<button type="button" class="dot${i === 0 ? " active" : ""}" data-i="${i}" aria-label="Foto ${i + 1}"></button>`).join("") : "";
+      <figure class="thumb"><img src="${esc(it.image)}" alt="${esc(it.caption || "")}" class="gzoom" loading="lazy" />${it.caption ? `<figcaption>${esc(it.caption)}</figcaption>` : ""}</figure>`).join("");
     slider.style.display = "";
   } else { slider.style.display = "none"; }
   // Judul & tampil/sembunyi bagian
@@ -218,48 +217,23 @@ function closeLightbox() {
   lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = "";
 }
 
-/* ---------------- Slider foto galeri ---------------- */
+/* ---------------- Slider foto galeri (strip thumbnail) ---------------- */
 function initGallerySlider() {
   const slider = document.getElementById("gallery-slider");
-  const track = document.getElementById("gallery-track");
-  if (!slider || !track || slider.style.display === "none") return;
-  const count = track.children.length;
-  if (!count) return;
-  const dots = [...slider.querySelectorAll(".dot")];
-  const btnPrev = document.getElementById("galPrev");
-  const btnNext = document.getElementById("galNext");
-  let idx = 0, timer = null, x0 = null, dragged = false;
-
-  const go = (n) => {
-    idx = (n + count) % count;
-    track.style.transform = `translateX(${-idx * 100}%)`;
-    dots.forEach((d, i) => d.classList.toggle("active", i === idx));
-  };
-  const next = () => go(idx + 1);
-  const prev = () => go(idx - 1);
-  const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
-  const start = () => { stop(); if (count > 1) timer = setInterval(next, 5000); };
-
-  if (count <= 1) { btnPrev.style.display = btnNext.style.display = "none"; }
-  btnNext.onclick = () => { next(); start(); };
-  btnPrev.onclick = () => { prev(); start(); };
-  dots.forEach((d) => (d.onclick = () => { go(+d.dataset.i); start(); }));
-
-  const vp = slider.querySelector(".slider-viewport");
-  vp.addEventListener("pointerdown", (e) => { x0 = e.clientX; dragged = false; stop(); });
-  vp.addEventListener("pointermove", (e) => { if (x0 != null && Math.abs(e.clientX - x0) > 10) dragged = true; });
-  vp.addEventListener("pointerup", (e) => {
-    if (x0 != null) { const dx = e.clientX - x0; if (Math.abs(dx) > 40) (dx < 0 ? next() : prev()); }
-    x0 = null; start();
-  });
-  // Ketuk foto (tanpa geser) -> lightbox
-  track.addEventListener("click", (e) => {
-    const img = e.target.closest("img.gzoom"); if (img && !dragged) openLightbox(img.src, img.alt);
-  });
-  slider.addEventListener("mouseenter", stop);
-  slider.addEventListener("mouseleave", start);
-
-  go(0); start();
+  const strip = document.getElementById("gallery-track");
+  if (!slider || !strip || slider.style.display === "none" || !strip.children.length) return;
+  const prev = document.getElementById("galPrev");
+  const next = document.getElementById("galNext");
+  const step = () => Math.max(240, Math.round(strip.clientWidth * 0.85));
+  next.onclick = () => strip.scrollBy({ left: step(), behavior: "smooth" });
+  prev.onclick = () => strip.scrollBy({ left: -step(), behavior: "smooth" });
+  // Klik thumbnail -> tampil besar (lightbox)
+  strip.addEventListener("click", (e) => { const img = e.target.closest("img.gzoom"); if (img) openLightbox(img.src, img.alt); });
+  // Sembunyikan tombol bila semua foto sudah muat tanpa scroll
+  const upd = () => { const noScroll = strip.scrollWidth <= strip.clientWidth + 4; prev.style.display = next.style.display = noScroll ? "none" : ""; };
+  upd();
+  window.addEventListener("resize", upd);
+  strip.addEventListener("scroll", () => {}, { passive: true });
 }
 
 /* ---------------- Navbar & global ---------------- */
